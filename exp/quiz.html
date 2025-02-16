@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz</title>
+    <link rel="stylesheet" href="quiz.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Quiz</h1>
+    </header>
+    <main>
+      <div class="quiz-container">
+        <form id="quiz-form">
+          <div class="question">
+            <h3>1. What is the capital of France?</h3>
+            <label> <input type="radio" name="q1" value="a" /> A) Berlin </label
+            ><br />
+            <label> <input type="radio" name="q1" value="b" /> B) Madrid </label
+            ><br />
+            <label> <input type="radio" name="q1" value="c" /> C) Paris </label
+            ><br />
+            <label> <input type="radio" name="q1" value="d" /> D) Rome </label>
+          </div>
+          <!-- Add more questions here -->
+          <button type="submit">Submit</button>
+        </form>
+        <div id="result"></div>
+      </div>
+    </main>
+    <script src="quiz.js"></script>
+  </body>
+</html>
