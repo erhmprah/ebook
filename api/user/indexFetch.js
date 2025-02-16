@@ -1,13 +1,13 @@
 const conn = require("./../../connection");
 
 async function indexFectch(req, res) {
-  const fetchQuery =
-    "SELECT title,author,image FROM books ORDER BY RAND() LIMIT 5";
+  const category = req.query.category;
+  const fetchQuery = `SELECT title,author,image FROM books WHERE category=? ORDER BY RAND() LIMIT 5 `;
 
   try {
     const promiseQuery = () => {
       return new Promise((resolve, reject) => {
-        conn.query(fetchQuery, (err, row) => {
+        conn.query(fetchQuery, [category], (err, row) => {
           if (err) {
             reject(err);
           } else {
@@ -17,7 +17,7 @@ async function indexFectch(req, res) {
       });
     };
 
-    const [row] = await promiseQuery();
+    const row = await promiseQuery();
     res.json(row);
   } catch (error) {
     console.log(error);
