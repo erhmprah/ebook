@@ -12,7 +12,13 @@ async function insertBookApi(req, res) {
   const status = req.body.status;
   const price = req.body.price;
   const date = req.body.date;
-  const image = req.file ? path.join("uploads/", req.file.filename) : "no";
+  const imageFile = req.files["image"] ? req.files["image"][0] : null; // First image file
+  const bookFile = req.files["book"] ? req.files["book"][0] : null; // First book file
+
+  // Get the file paths or set default values
+  const image = imageFile ? path.join("uploads", imageFile.filename) : "no";
+  const book = bookFile ? path.join("uploads", bookFile.filename) : "no";
+
   const values = [
     title,
     author,
@@ -24,10 +30,11 @@ async function insertBookApi(req, res) {
     status,
     price,
     image,
+    book,
     date,
   ];
 
-  const insertQuery = `INSERT INTO books (title,Author,Discription,category,excerpt,class,level,status,price,image,dateAdded) VALUES(?,?,?,?,?,?,?,?,?,?,?)`;
+  const insertQuery = `INSERT INTO books (title,Author,Discription,category,excerpt,class,level,status,price,image,book,dateAdded) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`;
 
   try {
     const promiseQuery = () => {

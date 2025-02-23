@@ -13,121 +13,74 @@
     <nav>
       <ul>
         <li><a href="#mybooks">My Books</a></li>
-        <li><a href="#textbooks">Textbooks</a></li>
-        <li><a href="#poems">Poems</a></li>
-        <li><a href="#novels">Novels</a></li>
+        <li><a onclick="getSeeMoreCat('Text book')">Textbooks</a></li>
+        <li><a onclick="getSeeMoreCat('novels')">Novels</a></li>
+        <li><a href="#poems">Stories</a></li>
         <li><a href="#quiz">Quiz</a></li>
         <li><a href="#discussions">Discussions</a></li>
       </ul>
     </nav>
     <main>
-      <section id="readingrockstars">
-        <div style="display: flex; justify-content: space-between">
-          <h2>Reading Rockstars</h2>
-          <h4>See more</h4>
-        </div>
-
-        <div class="book-category">
-          <!-- Example Book -->
-
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
-          </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
-          </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
-          </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
+      <div class="loading">
+        <div class="loader"></div>
+      </div>
+      <div id="bookContainer">
+        <section id="readingrockstars">
+          <div style="display: flex; justify-content: space-between">
+            <h2>Reading Rockstars</h2>
+            <h4 onclick="getSeeMoreCat('Novels')">See more</h4>
           </div>
 
-          <!-- Add more books here -->
-        </div>
-      </section>
-      <section id="bookwormsdlight">
-        <div style="display: flex; justify-content: space-between">
-          <h2>Bookworm's Delight</h2>
-          <h4>See more</h4>
-        </div>
+          <div class="indexbook-category">
+            <!-- Example Book -->
 
-        <div class="book-category">
-          <!-- Example Book -->
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
-          </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
-          </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
-          </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
-          </div>
-          <!-- Add more books here -->
-        </div>
-      </section>
-      <section id="bookshelfdiscovery">
-        <div style="display: flex; justify-content: space-between">
-          <h2>Bookshelf Discovery</h2>
-          <h4>See more</h4>
-        </div>
+            <div class="indexbook">
+              <img id="image" src="images/download.png" alt="Book Title" />
+              <h3 id="title">Book Title</h3>
+              <p id="author">Book Author</p>
+              <button>Read More</button>
+            </div>
 
-        <div class="book-category">
-          <!-- Example Book -->
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
+            <!-- Add more books here -->
           </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
+        </section>
+        <section id="bookwormsdelight">
+          <div style="display: flex; justify-content: space-between">
+            <h2>Bookworm's Delight</h2>
+            <h4 onclick="getSeeMoreCat('Text book')">See more</h4>
           </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
+
+          <div class="indexbook-category">
+            <!-- Example Book -->
+            <div class="indexbook">
+              <img id="image" src="images/download.png" alt="Book Title" />
+              <h3 id="title">Book Title</h3>
+              <p id="author">Book Author</p>
+              <button>Read More</button>
+            </div>
+
+            <!-- Add more books here -->
           </div>
-          <div class="book">
-            <img src="images/download.png" alt="Book Title" />
-            <h3>Book Title</h3>
-            <p>Book Author</p>
-            <button onclick="location.href='bookdetails'">Read More</button>
+        </section>
+        <section id="bookshelfdiscovery">
+          <div style="display: flex; justify-content: space-between">
+            <h2>Bookshelf Discovery</h2>
+            <h4 onclick="getSeeMoreCat('%%')">See more</h4>
           </div>
-          <!-- Add more books here -->
-        </div>
-      </section>
+
+          <div class="indexbook-category">
+            <!-- Example Book -->
+            <div class="indexbook">
+              <img id="image" src="images/download.png" alt="Book Title" />
+              <h3 id="title">Book Title</h3>
+              <p id="author">Book Author</p>
+              <button>Read More</button>
+            </div>
+
+            <!-- Add more books here -->
+          </div>
+        </section>
+      </div>
     </main>
     <script src="js/script.js"></script>
   </body>

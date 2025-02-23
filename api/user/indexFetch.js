@@ -2,7 +2,7 @@ const conn = require("./../../connection");
 
 async function indexFectch(req, res) {
   const category = req.query.category;
-  const fetchQuery = `SELECT title,author,image FROM books WHERE category=? ORDER BY RAND() LIMIT 5 `;
+  const fetchQuery = `SELECT idbooks,title,author,image FROM books WHERE category LIKE ? ORDER BY RAND() LIMIT 10 `;
 
   try {
     const promiseQuery = () => {

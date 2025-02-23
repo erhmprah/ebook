@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Category</title>
     <link rel="stylesheet" href="css/styles.css" />
+    <style></style>
   </head>
   <body>
     <header>
@@ -12,63 +13,19 @@
     </header>
     <main>
       <div class="book-category">
-        <!-- Example Book -->
-        <div class="book">
-          <img src="images/download.png" alt="Book Title" />
-          <h3>Book Title</h3>
-          <p>Book Author</p>
-          <button onclick="location.href='bookdetails.html'">
-            View Details
-          </button>
+        <div class="book" style="display: none">
+          <img class="image" src="images/download.png" alt="Book Title" />
+          <h3 class="title">Book Title</h3>
+          <p class="author">Book Author</p>
+          <button>View Details</button>
         </div>
+      </div>
 
-        <div class="book">
-          <img src="images/download.png" alt="Book Title" />
-          <h3>Book Title</h3>
-          <p>Book Author</p>
-          <button onclick="location.href='bookdetails.html'">
-            View Details
-          </button>
-        </div>
-
-        <div class="book">
-          <img src="images/download.png" alt="Book Title" />
-          <h3>Book Title</h3>
-          <p>Book Author</p>
-          <button onclick="location.href='bookdetails.html'">
-            View Details
-          </button>
-        </div>
-
-        <div class="book">
-          <img src="images/download.png" alt="Book Title" />
-          <h3>Book Title</h3>
-          <p>Book Author</p>
-          <button onclick="location.href='bookdetails.html'">
-            View Details
-          </button>
-        </div>
-
-        <div class="book">
-          <img src="images/download.png" alt="Book Title" />
-          <h3>Book Title</h3>
-          <p>Book Author</p>
-          <button onclick="location.href='bookdetails.html'">
-            View Details
-          </button>
-        </div>
-
-        <div class="book">
-          <img src="images/download.png" alt="Book Title" />
-          <h3>Book Title</h3>
-          <p>Book Author</p>
-          <button onclick="location.href='bookdetails.html'">
-            View Details
-          </button>
-        </div>
-
-        <!-- Add more books here -->
+      <div class="pagination">
+        <button class="button">1</button>
       </div>
     </main>
+
+    <script src="js/categoryScript.js"></script>
   </body>
 </html>

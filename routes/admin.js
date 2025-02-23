@@ -6,6 +6,13 @@ const upload = require("./../middlewares/multer");
 const router = express.Router();
 
 router.get("/addbook", addBook);
-router.post("/insertbook", upload.single("image"), insertBookApi);
+router.post(
+  "/insertbook",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "book", maxCount: 1 },
+  ]),
+  insertBookApi
+);
 
 module.exports = router;
