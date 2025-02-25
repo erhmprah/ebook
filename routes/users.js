@@ -7,9 +7,9 @@ const {
   category,
   read,
 } = require("../controller/users/users");
-const indexFectch = require("../api/user/indexFetch");
-const categoryFetch = require("../api/user/categoryFetch");
-const detailsFetch = require("../api/user/detailsFetch");
+const indexFectch = require("../apis/user/indexFetch");
+const categoryFetch = require("../apis/user/categoryFetch");
+const detailsFetch = require("../apis/user/detailsFetch");
 
 router.get("/", index);
 
