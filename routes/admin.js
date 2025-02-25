@@ -1,7 +1,7 @@
 const express = require("express");
 
 const addBook = require("../controller/admin/adminAddbook");
-const insertBookApi = require("../api/admin/insertBook");
+const insertBookApi = require("../apis/admin/insertBook");
 const upload = require("./../middlewares/multer");
 const router = express.Router();
 
