@@ -9,5 +9,8 @@ function bookDetails(req, res) {
 function category(req, res) {
   res.sendFile(path.join(__dirname, "..", "..", "views", "category.html"));
 }
+function read(req, res) {
+  res.sendFile(path.join(__dirname, "..", "..", "views", "bookDisplay.html"));
+}
 
-module.exports = { index, bookDetails, category };
+module.exports = { index, bookDetails, category, read };

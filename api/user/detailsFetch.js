@@ -3,7 +3,7 @@ const conn = require("../../connection");
 async function detailsFetch(req, res) {
   const bookId = parseInt(req.query.id);
   const fetchQuery =
-    "SELECT idbooks,title,Author,Discription,excerpt,status,price,image FROM books WHERE idbooks = ?";
+    "SELECT idbooks,title,Author,Discription,excerpt,status,price,image,book FROM books WHERE idbooks = ?";
 
   try {
     const promiseQuery = () => {

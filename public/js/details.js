@@ -29,6 +29,11 @@ const displayBooks = (book, status) => {
   } else {
     container.querySelector("#getBook").style.display = "none";
   }
+
+  container.querySelector("#getBook").addEventListener("click", () => {
+    sessionStorage.setItem("book", book[0].book);
+    window.location.href = "read";
+  });
 };
 
 window.addEventListener("load", () => {

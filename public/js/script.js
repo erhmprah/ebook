@@ -39,15 +39,15 @@ async function fetchBooks(category) {
 
 async function fetchAllBooks() {
   try {
-    const categories = ["Novels", "Text book", "%%"];
+    const categories = ["novels", "Text book", "%%"];
     const requests = categories.map((category) => fetchBooks(category));
     const results = await Promise.all(requests);
 
     const [readingRockstars, bookWorms, bookShelf] = results;
 
-    renderRockStarBooks(readingRockstars),
-      renderBookwormsBooks(bookWorms),
-      renderDiscoveryBooks(bookShelf);
+    renderBookwormsBooks(bookWorms), renderDiscoveryBooks(bookShelf);
+    renderRockStarBooks(readingRockstars);
+    console.log(readingRockstars);
   } catch (error) {
     console.error("Error fetching all books:", error);
   }
@@ -63,10 +63,9 @@ const rockStarBookTemplate =
 readingRockstarContainer.innerHTML = "";
 function renderRockStarBooks(readingRockstars) {
   // loop reading rocktstars in its container
-  const clonedTemplate = rockStarBookTemplate.cloneNode(true);
 
   readingRockstars.forEach((book) => {
-    //set display of original template to null
+    const clonedTemplate = rockStarBookTemplate.cloneNode(true);
     clonedTemplate.querySelector("#image").src = `${book.image}`;
     clonedTemplate.querySelector("#title").innerText = `${book.title}`;
     clonedTemplate.querySelector("#author").innerText = `${book.author}`;
