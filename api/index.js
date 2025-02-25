@@ -1,7 +1,6 @@
 const express = require("express");
 const qs = require("qs");
 const path = require("path");
-const conn = require("./connection");
 require("dotenv").config();
 const port = process.env.PORT || 4000;
 const app = express();
@@ -15,8 +14,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 //get routes ...................
-app.use("/", require("./routes/users"));
-app.use("/admin", require("./routes/admin"));
+app.use("/", require("../routes/users"));
+app.use("/admin", require("../routes/admin"));
 
 app.listen(port, (err) => {
   if (err) {
