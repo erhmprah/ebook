@@ -17,7 +17,7 @@ mainContainer.style.display = "none";
 async function fetchBooks(category) {
   try {
     const response = await fetch(
-      `https://ebookmemo.vercel.app/indexFetch/?category=${encodeURIComponent(
+      `https://ebookman.vercel.app/indexFetch/?category=${encodeURIComponent(
         category
       )}`
     );

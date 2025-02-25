@@ -7,7 +7,14 @@ const port = process.env.PORT || 4000;
 const cors = require("cors");
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "https://ebookman.vercel.app", // Replace with your frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE"], // Add other methods as needed
+  allowedHeaders: ["Content-Type", "Authorization"], // Add any custom headers your requests use
+  credentials: true, // If sending cookies or credentials with requests
+};
+
+app.use(cors(corsOptions));
 
 app.use(
   express.urlencoded({ extended: true, parameterLimit: 100, queryParser: qs })
