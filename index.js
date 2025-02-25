@@ -4,7 +4,10 @@ const path = require("path");
 const conn = require("./connection");
 require("dotenv").config();
 const port = process.env.PORT || 4000;
+const cors = require("cors");
 const app = express();
+
+app.use(cors());
 
 app.use(
   express.urlencoded({ extended: true, parameterLimit: 100, queryParser: qs })
