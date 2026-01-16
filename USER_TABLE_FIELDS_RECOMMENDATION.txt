@@ -1,0 +1,155 @@
+RECOMMENDED USER TABLE FIELDS FOR MODERN APPLICATIONS
+=====================================================
+
+=== CORE IDENTIFICATION FIELDS ===
+1. id - Primary key (INT AUTO_INCREMENT or UUID)
+2. user_id - Unique identifier (VARCHAR 255) for external references
+3. username - Unique username (VARCHAR 50-100) - Your existing field
+4. email - User email (VARCHAR 255) - Your existing field  
+5. password_hash - Hashed password (VARCHAR 255) - Your existing field
+
+=== PERSONAL INFORMATION FIELDS ===
+6. full_name - Full name (VARCHAR 255)
+7. first_name - First name (VARCHAR 100)
+8. last_name - Last name (VARCHAR 100)
+9. display_name - Display name/nickname (VARCHAR 100)
+10. bio - User biography/description (TEXT)
+11. date_of_birth - Birth date (DATE)
+12. gender - Gender (ENUM: 'male', 'female', 'other', 'prefer_not_to_say')
+13. profile_picture - Profile image URL (VARCHAR 500)
+14. cover_image - Cover/banner image URL (VARCHAR 500)
+
+=== CONTACT INFORMATION ===
+15. phone - Phone number (VARCHAR 20)
+16. phone_verified - Phone verification status (BOOLEAN DEFAULT FALSE)
+17. alternative_email - Alternative email (VARCHAR 255)
+18. website - Personal/portfolio website (VARCHAR 255)
+19. linkedin_url - LinkedIn profile URL (VARCHAR 255)
+20. twitter_handle - Twitter username (VARCHAR 100)
+21. github_username - GitHub username (VARCHAR 100)
+
+=== LOCATION INFORMATION ===
+22. country - Country (VARCHAR 100)
+23. state_province - State/Province (VARCHAR 100)
+24. city - City (VARCHAR 100)
+25. zip_code - ZIP/Postal code (VARCHAR 20)
+26. address - Full address (TEXT)
+27. timezone - User timezone (VARCHAR 50)
+
+=== ACCOUNT STATUS & VERIFICATION ===
+28. account_status - Account status (ENUM: 'active', 'suspended', 'deactivated', 'banned')
+29. email_verified - Email verification status (BOOLEAN DEFAULT FALSE)
+30. email_verification_token - Email verification token (VARCHAR 255)
+31. phone_verification_token - Phone verification token (VARCHAR 255)
+32. two_factor_enabled - 2FA status (BOOLEAN DEFAULT FALSE)
+33. two_factor_secret - 2FA secret key (VARCHAR 255)
+34. login_attempts - Failed login attempts count (INT DEFAULT 0)
+35. locked_until - Account lock expiration (TIMESTAMP NULL)
+
+=== AUTHENTICATION & SECURITY ===
+36. password_reset_token - Password reset token (VARCHAR 255)
+37. password_reset_expires - Password reset token expiration (TIMESTAMP)
+38. last_password_change - Last password change date (TIMESTAMP)
+39. security_questions - Encrypted security questions/answers (TEXT)
+40. login_history - JSON field with login history (JSON)
+
+=== PREFERENCES & SETTINGS ===
+41. language_preference - Preferred language (VARCHAR 10 DEFAULT 'en')
+42. currency_preference - Preferred currency (VARCHAR 3 DEFAULT 'USD')
+43. date_format - Date format preference (VARCHAR 20 DEFAULT 'MM/DD/YYYY')
+44. time_format - Time format (ENUM: '12h', '24h' DEFAULT '12h')
+45. theme_preference - UI theme (ENUM: 'light', 'dark', 'auto' DEFAULT 'light')
+46. notification_preferences - JSON field for notification settings (JSON)
+47. privacy_settings - JSON field for privacy settings (JSON)
+48. accessibility_settings - JSON field for accessibility options (JSON)
+
+=== ACTIVITY & ENGAGEMENT ===
+49. last_login - Last login timestamp (TIMESTAMP)
+50. last_activity - Last activity timestamp (TIMESTAMP)
+51. login_count - Total login count (INT DEFAULT 0)
+52. account_created - Account creation date (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+53. account_updated - Last account update (TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)
+54. email_last_sent - Last email sent timestamp (TIMESTAMP)
+55. profile_views - Profile view count (INT DEFAULT 0)
+56. followers_count - Number of followers (INT DEFAULT 0)
+57. following_count - Number of following (INT DEFAULT 0)
+
+=== SOCIAL & NETWORKING ===
+58. account_type - Account type (ENUM: 'personal', 'business', 'verified', 'admin')
+59. user_role - User role (ENUM: 'user', 'moderator', 'admin', 'super_admin')
+60. permissions - JSON field for specific permissions (JSON)
+61. interests - User interests/tags (TEXT or JSON)
+62. skills - User skills (TEXT or JSON)
+63. occupation - Job title/occupation (VARCHAR 255)
+64. company - Company/organization (VARCHAR 255)
+65. education - Education information (TEXT or JSON)
+
+=== BUSINESS & COMMERCIAL ===
+66. subscription_type - Subscription level (ENUM: 'free', 'basic', 'premium', 'enterprise')
+67. subscription_expires - Subscription expiration (TIMESTAMP NULL)
+68. payment_method - Saved payment method info (VARCHAR 255 or JSON)
+69. billing_address - Billing address (TEXT)
+70. tax_id - Tax identification number (VARCHAR 50)
+71. business_type - Type of business (VARCHAR 100)
+
+=== COMPLIANCE & LEGAL ===
+72. gdpr_consent - GDPR consent status (BOOLEAN DEFAULT FALSE)
+73. gdpr_consent_date - GDPR consent date (TIMESTAMP)
+74. marketing_consent - Marketing communication consent (BOOLEAN DEFAULT FALSE)
+75. terms_accepted - Terms of service acceptance (BOOLEAN DEFAULT FALSE)
+76. terms_accepted_date - Terms acceptance date (TIMESTAMP)
+77. privacy_policy_accepted - Privacy policy acceptance (BOOLEAN DEFAULT FALSE)
+78. data_processing_consent - Data processing consent (BOOLEAN DEFAULT FALSE)
+
+=== ANALYTICS & INSIGHTS ===
+79. user_segment - User segment for analytics (VARCHAR 100)
+80. acquisition_source - How user found the platform (VARCHAR 255)
+81. lifetime_value - User lifetime value (DECIMAL 10,2)
+82. engagement_score - User engagement score (DECIMAL 5,2)
+83. churn_risk - Churn risk level (ENUM: 'low', 'medium', 'high')
+
+=== ADDITIONAL METADATA ===
+84. metadata - Additional custom data (JSON)
+85. tags - User tags/labels (TEXT or JSON)
+86. notes - Admin notes about user (TEXT)
+87. referral_code - User referral code (VARCHAR 50)
+88. referred_by - Who referred this user (VARCHAR 255)
+89. locale - User locale for internationalization (VARCHAR 10)
+
+=== RECOMMENDED INDEXES ===
+- Primary key on (id)
+- Unique index on (username)
+- Unique index on (email)
+- Unique index on (user_id)
+- Index on (account_status)
+- Index on (email_verified)
+- Index on (last_login)
+- Index on (account_created)
+- Index on (subscription_type)
+- Composite index on (account_status, subscription_type)
+
+=== SAMPLE USAGE SCENARIOS ===
+E-commerce Platform: Include payment fields, shipping addresses, wishlist
+Social Media: Add follower/following, posts count, verification status
+SaaS Application: Include subscription details, team membership, usage metrics
+Educational Platform: Add enrolled courses, progress tracking, achievements
+Healthcare: Add medical history fields (with proper encryption/compliance)
+Financial: Add KYC information, account types, transaction limits
+
+=== SECURITY CONSIDERATIONS ===
+- Always hash passwords using bcrypt, scrypt, or argon2
+- Encrypt sensitive PII (Social Security Numbers, medical data)
+- Use prepared statements for all database operations
+- Implement proper input validation
+- Consider field-level encryption for highly sensitive data
+- Use UUID instead of auto-increment IDs for better security
+- Implement rate limiting for sensitive operations
+- Log all security-related events
+
+=== SCALABILITY CONSIDERATIONS ===
+- Use partitioning for large user bases (by date, region)
+- Consider sharding based on user_id or geographical region
+- Use caching for frequently accessed user data (Redis)
+- Implement database connection pooling
+- Consider using NoSQL for user preferences/metadata
+- Use CDN for profile images and media files

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Category Statistics - BookHub</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Nunito", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #2d3748;
+        line-height: 1.6;
+      }
+
+      header {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff 0%, #e2e8f0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .back-button {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        color: #667eea;
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+      }
+
+      .back-button:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      main {
+        padding: 2rem;
+        flex-grow: 1;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .stats-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+
+      .stats-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .stats-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .stats-header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+      }
+
+      .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .summary-card {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 1.5rem;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+      }
+
+      .summary-card h3 {
+        color: #667eea;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .summary-card p {
+        color: #718096;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .controls {
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.5);
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 12px;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+      }
+
+      .search-box input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #667eea;
+      }
+
+      .filter-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #4a5568;
+        font-weight: 500;
+      }
+
+      .filter-checkbox input {
+        width: 18px;
+        height: 18px;
+        accent-color: #667eea;
+      }
+
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+      }
+
+      .category-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .category-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .category-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .category-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .category-card.empty {
+        border-left: 4px solid #f56565;
+        background: rgba(245, 101, 101, 0.05);
+      }
+
+      .category-card.has-books {
+        border-left: 4px solid #48bb78;
+      }
+
+      .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .category-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0;
+        flex: 1;
+      }
+
+      .category-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        min-width: 80px;
+        text-align: center;
+      }
+
+      .category-badge.empty {
+        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+      }
+
+      .category-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .stat-item {
+        text-align: center;
+        padding: 0.75rem;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 12px;
+      }
+
+      .stat-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #667eea;
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        color: #718096;
+        margin-top: 0.25rem;
+      }
+
+      .price-range {
+        background: rgba(56, 161, 105, 0.1);
+        padding: 0.75rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+      }
+
+      .price-range h4 {
+        color: #38a169;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .price-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #4a5568;
+      }
+
+      .view-category-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .view-category-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .view-category-btn:disabled {
+        background: #a0aec0;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #718096;
+      }
+
+      .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e0;
+        margin-bottom: 1rem;
+      }
+
+      .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #4a5568;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 3rem;
+        color: #667eea;
+        font-weight: 500;
+      }
+
+      .loading i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .title {
+          font-size: 1.5rem;
+        }
+
+        main {
+          padding: 1rem;
+        }
+
+        .stats-header {
+          padding: 1.5rem;
+        }
+
+        .stats-header h1 {
+          font-size: 1.5rem;
+        }
+
+        .summary-stats {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 1rem;
+          padding: 1.5rem;
+        }
+
+        .controls {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 1rem;
+        }
+
+        .search-box {
+          min-width: auto;
+        }
+
+        .categories-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+          padding: 1rem;
+        }
+
+        .category-card {
+          padding: 1.25rem;
+        }
+
+        .category-stats {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 class="title"><i class="fas fa-chart-bar"></i> Category Statistics</h1>
+      <a href="/" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      </a>
+    </header>
+
+    <main>
+      <div class="stats-container">
+        <div class="stats-header">
+          <h1>Book Categories Overview</h1>
+          <p>Discover which categories have books and which ones need more content</p>
+        </div>
+
+        <div class="summary-stats" id="summaryStats" style="display: none;">
+          <div class="summary-card">
+            <h3 id="totalCategories">-</h3>
+            <p>Total Categories</p>
+          </div>
+          <div class="summary-card">
+            <h3 id="populatedCategories">-</h3>
+            <p>With Books</p>
+          </div>
+          <div class="summary-card">
+            <h3 id="emptyCategories">-</h3>
+            <p>Empty Categories</p>
+          </div>
+          <div class="summary-card">
+            <h3 id="totalBooks">-</h3>
+            <p>Total Books</p>
+          </div>
+          <div class="summary-card">
+            <h3 id="avgBooksPerCategory">-</h3>
+            <p>Avg per Category</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search categories..." />
+          </div>
+          <label class="filter-checkbox">
+            <input type="checkbox" id="showEmptyCheckbox" checked />
+            <span>Show empty categories</span>
+          </label>
+        </div>
+
+        <div class="categories-grid" id="categoriesGrid">
+          <div class="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Loading category statistics...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Global variables
+      let allCategories = [];
+      let filteredCategories = [];
+
+      // DOM elements
+      const categoriesGrid = document.getElementById('categoriesGrid');
+      const searchInput = document.getElementById('searchInput');
+      const showEmptyCheckbox = document.getElementById('showEmptyCheckbox');
+      const summaryStats = document.getElementById('summaryStats');
+
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', function() {
+        loadCategoryStats();
+        setupEventListeners();
+      });
+
+      function setupEventListeners() {
+        searchInput.addEventListener('input', debounce(filterCategories, 300));
+        showEmptyCheckbox.addEventListener('change', filterCategories);
+      }
+
+      async function loadCategoryStats() {
+        try {
+          const response = await fetch('/api/category/stats');
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            allCategories = result.data.categories;
+            filteredCategories = [...allCategories];
+            
+            displaySummaryStats(result.data.summary);
+            displayCategories();
+          } else {
+            throw new Error(result.message || 'Failed to load category statistics');
+          }
+        } catch (error) {
+          console.error('Error loading category stats:', error);
+          showError('Failed to load category statistics. Please try again.');
+        }
+      }
+
+      function displaySummaryStats(summary) {
+        document.getElementById('totalCategories').textContent = summary.total_categories;
+        document.getElementById('populatedCategories').textContent = summary.populated_categories;
+        document.getElementById('emptyCategories').textContent = summary.empty_categories;
+        document.getElementById('totalBooks').textContent = summary.total_books;
+        document.getElementById('avgBooksPerCategory').textContent = summary.average_books_per_category;
+        
+        summaryStats.style.display = 'grid';
+      }
+
+      function filterCategories() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const showEmpty = showEmptyCheckbox.checked;
+        
+        filteredCategories = allCategories.filter(category => {
+          const matchesSearch = category.name.toLowerCase().includes(searchTerm);
+          const matchesEmpty = showEmpty || !category.is_empty;
+          
+          return matchesSearch && matchesEmpty;
+        });
+        
+        displayCategories();
+      }
+
+      function displayCategories() {
+        if (filteredCategories.length === 0) {
+          categoriesGrid.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-folder-open"></i>
+              <h3>No categories found</h3>
+              <p>Try adjusting your search or filter settings</p>
+            </div>
+          `;
+          return;
+        }
+
+        const categoriesHTML = filteredCategories.map(category => {
+          const cardClass = category.is_empty ? 'category-card empty' : 'category-card has-books';
+          const badgeClass = category.is_empty ? 'category-badge empty' : 'category-badge';
+          const badgeText = category.is_empty ? 'Empty' : `${category.book_count} books`;
+          
+          return `
+            <div class="${cardClass}">
+              <div class="category-header">
+                <h3 class="category-name">${escapeHtml(category.name)}</h3>
+                <span class="${badgeClass}">${badgeText}</span>
+              </div>
+              
+              <div class="category-stats">
+                <div class="stat-item">
+                  <span class="stat-value">${category.book_count}</span>
+                  <span class="stat-label">Books</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">${category.unique_authors || 0}</span>
+                  <span class="stat-label">Authors</span>
+                </div>
+              </div>
+              
+              ${!category.is_empty ? `
+                <div class="price-range">
+                  <h4>Price Range</h4>
+                  <div class="price-info">
+                    <span>₵${category.min_price}</span>
+                    <span>Avg: ₵${category.avg_price}</span>
+                    <span>₵${category.max_price}</span>
+                  </div>
+                </div>
+              ` : `
+                <div class="price-range" style="background: rgba(245, 101, 101, 0.1);">
+                  <h4 style="color: #e53e3e;">No Books Available</h4>
+                  <p style="color: #718096; font-size: 0.85rem; margin: 0;">This category is empty and needs content</p>
+                </div>
+              `}
+              
+              <button class="view-category-btn" 
+                onclick="viewCategory('${escapeHtml(category.name)}')"
+                ${category.is_empty ? 'disabled' : ''}>
+                <i class="fas fa-${category.is_empty ? 'exclamation-triangle' : 'book'}"></i>
+                ${category.is_empty ? 'Category Empty' : 'View Books'}
+              </button>
+            </div>
+          `;
+        }).join('');
+        
+        categoriesGrid.innerHTML = categoriesHTML;
+      }
+
+      function viewCategory(categoryName) {
+        // Navigate to the category page
+        window.location.href = `/category?category=${encodeURIComponent(categoryName)}`;
+      }
+
+      function showError(message) {
+        categoriesGrid.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Error Loading Data</h3>
+            <p>${escapeHtml(message)}</p>
+            <button onclick="loadCategoryStats()" style="
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+              border: none;
+              padding: 0.75rem 1.5rem;
+              border-radius: 12px;
+              cursor: pointer;
+              font-weight: 600;
+              margin-top: 1rem;
+            ">
+              <i class="fas fa-redo"></i> Try Again
+            </button>
+          </div>
+        `;
+      }
+
+      // Utility functions
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Dynamic gradient animation
+      const gradients = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
+      ];
+
+      let currentGradient = 0;
+
+      function changeGradient() {
+        currentGradient = (currentGradient + 1) % gradients.length;
+        document.body.style.background = gradients[currentGradient];
+      }
+
+      // Change gradient every 15 seconds
+      setInterval(changeGradient, 15000);
+
+      // Optional: Change gradient on user interaction
+      document.addEventListener('click', changeGradient);
+    </script>
+  </body>
+</html>

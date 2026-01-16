@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Login - BookHub</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .login-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .login-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+      }
+
+      .logo {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .logo i {
+        font-size: 2.5rem;
+        color: white;
+      }
+
+      .login-container h2 {
+        color: #2d3748;
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .login-container .subtitle {
+        color: #718096;
+        font-size: 1rem;
+        margin-bottom: 2.5rem;
+        font-weight: 400;
+        line-height: 1.5;
+      }
+
+      .google-auth-button {
+        background: #fff;
+        color: #4a5568;
+        border: 2px solid #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-family: inherit;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .google-auth-button:hover {
+        background: #f7fafc;
+        border-color: #cbd5e0;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .google-auth-button:active {
+        transform: translateY(0);
+      }
+
+      .google-auth-button i {
+        color: #ea4335;
+        font-size: 1.3rem;
+        margin-right: 0.75rem;
+      }
+
+      .feature-list {
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        text-align: left;
+      }
+
+      .feature-list h3 {
+        color: #2d3748;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        color: #4a5568;
+        font-size: 0.9rem;
+      }
+
+      .feature-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .feature-item i {
+        color: #38a169;
+        margin-right: 0.75rem;
+        font-size: 1rem;
+      }
+
+      .security-badge {
+        background: linear-gradient(135deg, #38a169, #2f855a);
+        color: white;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .security-badge i {
+        margin-right: 0.5rem;
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .loading-content {
+        text-align: center;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #e2e8f0;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .loading-text {
+        color: #4a5568;
+        font-weight: 500;
+        font-size: 1.1rem;
+      }
+
+      @media (max-width: 768px) {
+        .login-container {
+          max-width: 400px;
+          padding: 2.5rem;
+        }
+
+        .login-container h2 {
+          font-size: 2rem;
+        }
+
+        .logo {
+          width: 70px;
+          height: 70px;
+        }
+
+        .logo i {
+          font-size: 2.2rem;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 15px;
+        }
+
+        .login-container {
+          max-width: 100%;
+          padding: 2rem;
+        }
+
+        .login-container h2 {
+          font-size: 1.9rem;
+        }
+
+        .google-auth-button {
+          padding: 1rem;
+          font-size: 0.95rem;
+        }
+
+        .feature-list {
+          padding: 1.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="logo">
+        <i class="fas fa-book-open"></i>
+      </div>
+      
+      <h2>Welcome to BookHub</h2>
+      <p class="subtitle">
+        Your ultimate destination for digital books and learning resources
+      </p>
+
+      <button class="google-auth-button" id="googleAuthBtn">
+        <i class="fab fa-google"></i>
+        <span>Continue with Google</span>
+      </button>
+
+      <div class="feature-list">
+        <h3>What you'll get:</h3>
+        <div class="feature-item">
+          <i class="fas fa-shield-alt"></i>
+          <span>Secure authentication with Google</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-book"></i>
+          <span>Access to thousands of books</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-cloud"></i>
+          <span>Sync across all your devices</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-user-cog"></i>
+          <span>Personalized reading experience</span>
+        </div>
+      </div>
+
+      <div class="security-badge">
+        <i class="fas fa-lock"></i>
+        <span>Secured by Google OAuth 2.0</span>
+      </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Connecting to Google...</div>
+      </div>
+    </div>
+
+    <script>
+      const googleAuthBtn = document.getElementById("googleAuthBtn");
+      const loadingOverlay = document.getElementById("loadingOverlay");
+
+      // Google Auth Button
+      googleAuthBtn.addEventListener("click", () => {
+        // Show loading overlay
+        loadingOverlay.style.display = "flex";
+        
+        // Disable button to prevent multiple clicks
+        googleAuthBtn.disabled = true;
+        googleAuthBtn.style.opacity = "0.7";
+        
+        // Redirect to Google OAuth
+        window.location.href = "/auth/google";
+      });
+
+      // Add entrance animation
+      window.addEventListener("load", () => {
+        document.querySelector(".login-container").style.opacity = "0";
+        document.querySelector(".login-container").style.transform = "translateY(20px)";
+        
+        setTimeout(() => {
+          document.querySelector(".login-container").style.transition = "all 0.6s ease";
+          document.querySelector(".login-container").style.opacity = "1";
+          document.querySelector(".login-container").style.transform = "translateY(0)";
+        }, 100);
+      });
+
+      // Keyboard accessibility
+      googleAuthBtn.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          googleAuthBtn.click();
+        }
+      });
+    </script>
+  </body>
+</html>

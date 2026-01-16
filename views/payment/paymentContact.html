@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mobile Money Payment</title>
+   
+    <style>
+      /* General body styling for centering and background */
+      body {
+        font-family: "Nunito", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Full viewport height */
+        margin: 0;
+        padding: 20px; /* Add some padding for smaller screens */
+        box-sizing: border-box; /* Include padding in element's total width and height */
+      }
+
+      /* Container for the entire payment form */
+      .payment-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 16px; /* Rounded corners for the container */
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15); /* Soft shadow */
+        text-align: center;
+        width: 100%; /* Fluid width */
+        max-width: 450px; /* Max width for desktop view */
+        box-sizing: border-box;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .payment-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+      }
+
+      /* Heading style */
+      h1 {
+        color: #2c3e50; /* Darker text for heading */
+        margin-bottom: 25px;
+        font-size: 1.8rem; /* Responsive font size */
+      }
+
+      /* Form group for input fields */
+      .form-group {
+        margin-bottom: 20px;
+        text-align: left; /* Align labels to the left */
+      }
+
+      /* Label styling */
+      .form-group label {
+        display: block; /* Make labels block-level for better spacing */
+        color: #555;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      /* Input field styling */
+      .form-group input[type="email"],
+      .form-group input[type="tel"] {
+        width: 100%; /* Full width of its container */
+        padding: 12px 15px;
+        border: 1px solid #ced4da; /* Light grey border */
+        border-radius: 8px; /* Rounded corners for inputs */
+        box-sizing: border-box; /* Include padding in width */
+        font-size: 1rem;
+        color: #333;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      /* Read-only amount field styling */
+      .form-group input[type="number"][readonly] {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #28a745;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        color: #28a745;
+        font-weight: 600;
+        background: rgba(40, 167, 69, 0.05);
+        cursor: not-allowed;
+        position: relative;
+      }
+
+      /* Add lock icon to amount field */
+      .form-group input[type="number"][readonly]::after {
+        content: '🔒';
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        pointer-events: none;
+      }
+
+      /* Price display styling */
+      .price-display {
+        background: rgba(40, 167, 69, 0.1);
+        border: 1px solid #28a745;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .price-display strong {
+        color: #28a745;
+        font-size: 1.1rem;
+      }
+
+      /* Input focus effect */
+      .form-group input[type="email"]:focus,
+      .form-group input[type="number"]:focus,
+      .form-group input[type="tel"]:focus {
+        border-color: #007bff; /* Blue border on focus */
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Light blue shadow on focus */
+        outline: none; /* Remove default outline */
+      }
+
+      /* Submit button styling */
+      .submit-button {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+        padding: 14px 25px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+        max-width: 250px;
+        margin-top: 15px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      }
+
+      .submit-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+
+      .submit-button:hover::before {
+        left: 100%;
+      }
+
+      /* Submit button hover effect */
+      .submit-button:hover {
+        background: linear-gradient(135deg, #218838 0%, #1dd1a1 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+      }
+
+      .submit-button:active {
+        transform: translateY(0);
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 600px) {
+        .payment-container {
+          padding: 20px;
+          margin: 10px; /* Margin for very small screens */
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .form-group input {
+          padding: 10px;
+        }
+
+        .submit-button {
+          padding: 12px 20px;
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="payment-container">
+      <h1>Complete Your Payment</h1>
+
+      <!-- Book price display -->
+      <div class="price-display" id="bookPriceDisplay" style="display: none;">
+        <div>Book Price: <strong>GHS <span id="displayPrice">0.00</span></strong></div>
+      </div>
+
+      <form id="paymentForm"  >
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="your.email@example.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Amount (GHS)</label>
+          <input
+            type="number"
+            id="amount"
+            name="amount"
+            readonly
+            step="0.01"
+            min="0.01"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            placeholder="e.g., 024XXXXXXX"
+            pattern="[0-9]{10}"
+            title="Please enter a 10-digit phone number"
+            required
+          />
+        </div>
+
+        <button type="submit" class="submit-button">Pay Now</button>
+      </form>
+    </div>
+
+    
+
+  <script>
+      // Auto-populate amount field with book price and show selected provider
+      window.addEventListener("load", function() {
+        const bookPrice = sessionStorage.getItem("bookPrice");
+        const selectedProvider = sessionStorage.getItem("selectedProvider");
+        const bookTitle = sessionStorage.getItem("bookTitle");
+
+        const amountField = document.getElementById("amount");
+        const priceDisplay = document.getElementById("bookPriceDisplay");
+        const displayPrice = document.getElementById("displayPrice");
+
+        // Auto-populate amount field
+        if (bookPrice && amountField) {
+          amountField.value = bookPrice;
+          displayPrice.textContent = parseFloat(bookPrice).toFixed(2);
+          priceDisplay.style.display = "block";
+        }
+
+        // Show selected provider and book title
+        if (selectedProvider) {
+          const providerNames = {
+            'telecel': 'Telecel Cash',
+            'mtn': 'MTN MoMo',
+            'airteltigo': 'AirtelTigo Money'
+          };
+
+          // Add provider info to the form
+          const providerInfo = document.createElement("div");
+          providerInfo.className = "provider-info";
+          providerInfo.style.cssText = `
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+          `;
+
+          if (bookTitle) {
+            providerInfo.innerHTML = `
+              <div><strong>Book:</strong> ${bookTitle}</div>
+              <div><strong>Payment Method:</strong> ${providerNames[selectedProvider] || selectedProvider}</div>
+            `;
+          } else {
+            providerInfo.innerHTML = `
+              <div><strong>Payment Method:</strong> ${providerNames[selectedProvider] || selectedProvider}</div>
+            `;
+          }
+
+          // Insert after the price display
+          if (priceDisplay.parentNode) {
+            priceDisplay.parentNode.insertBefore(providerInfo, priceDisplay.nextSibling);
+          }
+        }
+      });
+
+      // Handle form submission with Paystack integration
+      document
+        .getElementById("paymentForm")
+        .addEventListener("submit",  ()=> {
+          event.preventDefault(); // Prevent default form submission
+
+          const email = document.getElementById("email").value;
+          const amount = document.getElementById("amount").value;
+          const phone = document.getElementById("phone").value;
+          const selectedProvider = sessionStorage.getItem("selectedProvider");
+          sessionStorage.getItem("bookId"),
+          sessionStorage.getItem("bookTitle")
+            
+                
+           
+})
+    
+
+     
+
+    </script>
+  </body>
+</html>

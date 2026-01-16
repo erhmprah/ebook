@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Display Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #pdfFrame {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        .info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Display Test</h1>
+        
+        <div class="info">
+            <h3>Test Information</h3>
+            <p>This page tests PDF display functionality directly.</p>
+            <p id="debugInfo">Debug info will appear here...</p>
+        </div>
+
+        <div>
+            <h3>Manual PDF Tests</h3>
+            <button onclick="testPDF('book-1759912509462.pdf')">Test Book 1 (Do Androids...)</button>
+            <button onclick="testPDF('book-1759913011388.pdf')">Test Book 2 (everything is not peachy)</button>
+            <button onclick="clearPDF()">Clear PDF</button>
+        </div>
+
+        <div>
+            <h3>SessionStorage Test</h3>
+            <button onclick="setSessionStorage()">Set sessionStorage (simulate book selection)</button>
+            <button onclick="clearSessionStorage()">Clear sessionStorage</button>
+            <button onclick="testWithSessionStorage()">Test with sessionStorage</button>
+        </div>
+
+        <div id="pdfContainer" style="margin-top: 20px;">
+            <h3>PDF Display</h3>
+            <iframe id="pdfFrame" style="display: none;" sandbox="allow-scripts allow-same-origin">
+                Your browser does not support PDFs.
+            </iframe>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const pdfFrame = document.getElementById('pdfFrame');
+        const debugInfo = document.getElementById('debugInfo');
+        const status = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = type;
+            logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            status.appendChild(logEntry);
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function testPDF(filename) {
+            log(`Testing PDF: ${filename}`, 'info');
+            
+            // Clear previous content
+            pdfFrame.style.display = 'none';
+            pdfFrame.src = 'about:blank';
+            
+            // Set up iframe event handlers
+            pdfFrame.onload = function() {
+                log(`✅ PDF loaded successfully: ${filename}`, 'success');
+                pdfFrame.style.display = 'block';
+            };
+            
+            pdfFrame.onerror = function() {
+                log(`❌ PDF failed to load: ${filename}`, 'error');
+                pdfFrame.style.display = 'none';
+            };
+
+            // Test direct URL
+            const url = `http://localhost:4000/pdf/${filename}`;
+            log(`Loading URL: ${url}`, 'info');
+            
+            // Set timeout
+            setTimeout(() => {
+                if (pdfFrame.style.display === 'none') {
+                    log(`⚠️  PDF loading timeout for: ${filename}`, 'error');
+                }
+            }, 5000);
+            
+            pdfFrame.src = url;
+        }
+
+        function clearPDF() {
+            log('Clearing PDF display', 'info');
+            pdfFrame.src = 'about:blank';
+            pdfFrame.style.display = 'none';
+        }
+
+        function setSessionStorage() {
+            const testBook = 'uploads\\book-1759912509462.pdf'; // Windows path style
+            sessionStorage.setItem('book', testBook);
+            sessionStorage.setItem('selectedBook', '1');
+            log(`Set sessionStorage: book="${testBook}", selectedBook="1"`, 'success');
+        }
+
+        function clearSessionStorage() {
+            sessionStorage.removeItem('book');
+            sessionStorage.removeItem('selectedBook');
+            log('Cleared sessionStorage', 'info');
+        }
+
+        function testWithSessionStorage() {
+            const bookSrc = sessionStorage.getItem('book');
+            log(`Retrieved from sessionStorage: "${bookSrc}"`, 'info');
+            
+            if (!bookSrc) {
+                log('❌ No book source found in sessionStorage', 'error');
+                return;
+            }
+
+            // Test URL processing
+            const processedUrl = processBookUrl(bookSrc);
+            log(`Processed URL: "${bookSrc}" → "${processedUrl}"`, 'info');
+            
+            // Test if file exists
+            const filename = processedUrl.replace('/pdf/', '');
+            log(`Testing PDF accessibility: /pdf/${filename}`, 'info');
+            
+            testPDF(filename);
+        }
+
+        // Copy the processBookUrl function from bookDisplay.js
+        function processBookUrl(url) {
+            if (!url) return '';
+
+            console.log("Processing URL:", url);
+
+            // If it's already a full URL with /pdf/, return as is
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                // If it's a direct uploads URL, convert to PDF route
+                if (url.includes('/uploads/') && url.endsWith('.pdf')) {
+                    const filename = url.split('/uploads/')[1];
+                    return `/pdf/${filename}`;
+                }
+                console.log("Already a full URL:", url);
+                return url;
+            }
+
+            // If it already contains uploads/, convert to PDF route
+            if (url.includes('uploads/')) {
+                const filename = url.replace(/^.*uploads\//, '');
+                const pdfUrl = `/pdf/${filename}`;
+                console.log("URL with uploads, converted to PDF route:", url, "→", pdfUrl);
+                return pdfUrl;
+            }
+
+            // For simple filenames without path, use PDF route
+            if (!url.includes('/') && url.endsWith('.pdf')) {
+                const pdfUrl = `/pdf/${url}`;
+                console.log("Simple PDF filename, added PDF route:", pdfUrl);
+                return pdfUrl;
+            }
+
+            // For other relative paths, use PDF route
+            const pdfUrl = `/pdf/${url}`;
+            console.log("Other path, using PDF route:", pdfUrl);
+            return pdfUrl;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('PDF Test Page Loaded', 'success');
+            log('Current sessionStorage:', 'info');
+            log(`  book: "${sessionStorage.getItem('book')}"`, 'info');
+            log(`  selectedBook: "${sessionStorage.getItem('selectedBook')}"`, 'info');
+        });
+    </script>
+</body>
+</html>

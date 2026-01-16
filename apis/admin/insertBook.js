@@ -16,8 +16,8 @@ async function insertBookApi(req, res) {
   const bookFile = req.files["book"] ? req.files["book"][0] : null; // First book file
 
   // Get the file paths or set default values
-  const image = imageFile ? path.join("uploads", imageFile.filename) : "no";
-  const book = bookFile ? path.join("uploads", bookFile.filename) : "no";
+  const image = imageFile ? path.join("uploads", imageFile.filename) : null;
+  const book = bookFile ? path.join("uploads", bookFile.filename) : null;
 
   const values = [
     title,

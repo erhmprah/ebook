@@ -3,87 +3,243 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Responsive Form</title>
+    <title>BookHub - Add New Book</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f5f5;
-        color: #34495e;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+      * {
         margin: 0;
-        padding: 10px;
+        padding: 0;
+        box-sizing: border-box;
       }
-      .form-container {
-        background-color: #ffffff;
+
+      body {
+        font-family: "Nunito", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
         padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        max-width: 100%;
-        width: 600px;
+        color: #2d3748;
       }
+
+      .form-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+      }
+
+      .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .form-header h1 {
+        color: #2d3748;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-header p {
+        color: #718096;
+        font-size: 1rem;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
       .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 1.5rem;
       }
+
       .form-group label {
         display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.9rem;
       }
+
       .form-group input,
       .form-group select,
       .form-group textarea {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f7fafc;
+        font-family: inherit;
       }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
       .form-group textarea {
         resize: vertical;
+        min-height: 100px;
       }
-      .form-group button {
-        background-color: #34495e;
-        color: #ffffff;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 5px;
+
+      .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .file-input-wrapper input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
         cursor: pointer;
       }
-      .form-group button:hover {
-        background-color: #2c3e50;
+
+      .file-input-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.875rem 1rem;
+        border: 2px dashed #cbd5e0;
+        border-radius: 12px;
+        background: #f7fafc;
+        color: #718096;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-height: 50px;
       }
 
-      @media (max-width: 600px) {
-        .form-container {
-          padding: 10px;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-          padding: 8px;
-        }
-        .form-group button {
-          padding: 8px 12px;
-        }
+      .file-input-wrapper:hover .file-input-label {
+        border-color: #667eea;
+        background: #edf2f7;
       }
 
-      @media (max-width: 400px) {
-        body {
-          padding: 5px;
-        }
+      .submit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+
+      .submit-btn:hover::before {
+        left: 100%;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .form-sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-section h3 {
+        color: #2d3748;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+      }
+
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .category-option {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .category-option input[type="radio"] {
+        margin-right: 0.5rem;
+      }
+
+      .category-option:hover {
+        background: #edf2f7;
+      }
+
+      .category-option.selected {
+        background: #667eea;
+        color: white;
+      }
+
+      @media (max-width: 768px) {
         .form-container {
-          width: 100%;
-          padding: 5px;
+          padding: 1.5rem;
+          margin: 1rem;
         }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-          padding: 6px;
+
+        .form-row,
+        .form-sections {
+          grid-template-columns: 1fr;
+          gap: 1rem;
         }
-        .form-group button {
-          padding: 6px 10px;
+
+        .category-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -91,69 +247,212 @@
 
   <body>
     <div class="form-container">
-      <form method="post" action="insertBook" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" id="title" name="title" required />
-        </div>
-        <div class="form-group">
-          <label for="author">Author</label>
-          <input type="text" id="author" name="author" required />
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            rows="4"
-            required
-          ></textarea>
-        </div>
-        <div class="form-group">
-          <label for="category">Category</label>
-          <input type="text" id="category" name="category" required />
-        </div>
-        <div class="form-group">
-          <label for="excerpt">Excerpt</label>
-          <textarea id="excerpt" name="excerpt" rows="2" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="class">Class</label>
-          <input type="text" id="class" name="class" required />
-        </div>
-        <div class="form-group">
-          <label for="level">Level</label>
-          <input type="text" id="level" name="level" required />
-        </div>
-        <div class="form-group">
-          <label for="status">Status</label>
-          <input type="text" id="status" name="status" required />
-        </div>
-        <div class="form-group">
-          <label for="price">Price</label>
-          <input type="number" id="price" name="price" required />
-        </div>
-        <div class="form-group">
-          <label for="date-added">Date Added</label>
-          <input type="date" id="date-added" name="date-added" required />
-        </div>
-        <div class="form-group">
-          <label for="book">Book</label>
-          <input type="file" accept=".pdf" name="book" id="book" required />
-        </div>
-        <div class="form-group">
-          <label for="image">Cover</label>
-          <input
-            type="file"
-            id="image"
-            name="image"
-            accept="image/*"
-            required
-          />
+      <div class="form-header">
+        <h1><i class="fas fa-book"></i> Add New Book</h1>
+        <p>Fill in the details below to add a new book to BookHub</p>
+      </div>
+
+      <form method="post" action="insertBook" enctype="multipart/form-data" id="bookForm">
+        <div class="form-sections">
+          <!-- Book Information Section -->
+          <div class="form-section">
+            <h3><i class="fas fa-info-circle"></i> Book Information</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="title"><i class="fas fa-heading"></i> Title *</label>
+                <input type="text" id="title" name="title" required placeholder="Enter book title" />
+              </div>
+              <div class="form-group">
+                <label for="author"><i class="fas fa-user"></i> Author *</label>
+                <input type="text" id="author" name="author" required placeholder="Enter author name" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="description"><i class="fas fa-align-left"></i> Description *</label>
+              <textarea id="description" name="description" required placeholder="Enter book description"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="excerpt"><i class="fas fa-quote-left"></i> Excerpt *</label>
+              <textarea id="excerpt" name="excerpt" required placeholder="Enter a brief excerpt or summary"></textarea>
+            </div>
+          </div>
+
+          <!-- Category & Classification Section -->
+          <div class="form-section">
+            <h3><i class="fas fa-tags"></i> Category & Classification</h3>
+
+            <div class="form-group">
+              <label><i class="fas fa-layer-group"></i> Category *</label>
+              <div class="category-grid">
+                <label class="category-option" for="textbooks">
+                  <input type="radio" id="textbooks" name="category" value="Textbooks" required />
+                  <span>Textbooks</span>
+                </label>
+                <label class="category-option" for="storybooks">
+                  <input type="radio" id="storybooks" name="category" value="Storybooks" />
+                  <span>Storybooks</span>
+                </label>
+                <label class="category-option" for="folktale">
+                  <input type="radio" id="folktale" name="category" value="Folktale Books" />
+                  <span>Folktale Books</span>
+                </label>
+                <label class="category-option" for="fable">
+                  <input type="radio" id="fable" name="category" value="Fable Books" />
+                  <span>Fable Books</span>
+                </label>
+                <label class="category-option" for="poetry">
+                  <input type="radio" id="poetry" name="category" value="Poetry Books" />
+                  <span>Poetry Books</span>
+                </label>
+                <label class="category-option" for="picture">
+                  <input type="radio" id="picture" name="category" value="Picture Books" />
+                  <span>Picture Books</span>
+                </label>
+                <label class="category-option" for="nonfiction">
+                  <input type="radio" id="nonfiction" name="category" value="Informational / Non-Fiction Books" />
+                  <span>Non-Fiction Books</span>
+                </label>
+                <label class="category-option" for="biography">
+                  <input type="radio" id="biography" name="category" value="Biography Books" />
+                  <span>Biography Books</span>
+                </label>
+                <label class="category-option" for="comprehension">
+                  <input type="radio" id="comprehension" name="category" value="Comprehension and Reading Practice Books" />
+                  <span>Comprehension Books</span>
+                </label>
+                <label class="category-option" for="religious">
+                  <input type="radio" id="religious" name="category" value="Religious or Moral Storybooks" />
+                  <span>Religious/Moral Books</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="class"><i class="fas fa-graduation-cap"></i> Class/Grade</label>
+                <select id="class" name="class">
+                  <option value="">Select Class</option>
+                  <option value="Nursery">Nursery</option>
+                  <option value="Basic 1">Basic 1</option>
+                  <option value="Basic 2">Basic 2</option>
+                  <option value="Basic 3">Basic 3</option>
+                  <option value="Basic 4">Basic 4</option>
+                  <option value="Basic 5">Basic 5</option>
+                  <option value="Basic 6">Basic 6</option>
+                  <option value="Basic 7">Basic 7</option>
+                  <option value="Basic 8">Basic 8</option>
+                  <option value="Basic 9">Basic 9</option>
+                  <option value="Basic 10">Basic 10</option>
+                  <option value="Basic 11">Basic 11</option>
+                  <option value="Basic 12">Basic 12</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="level"><i class="fas fa-signal"></i> Level</label>
+                <select id="level" name="level">
+                  <option value="">Select Level</option>
+                  <option value="Lower Primary">Lower Primary</option>
+                  <option value="Upper Primary">Upper Primary</option>
+                  <option value="JHS">JHS</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <button type="submit">Submit</button>
+        <!-- Pricing & Status Section -->
+        <div class="form-section" style="max-width: 600px; margin: 0 auto;">
+          <h3><i class="fas fa-cog"></i> Pricing & Settings</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="price"><i class="fas fa-dollar-sign"></i> Price (₵) *</label>
+              <input type="number" id="price" name="price" required placeholder="0.00" step="0.01" min="0" />
+            </div>
+            <div class="form-group">
+              <label for="status"><i class="fas fa-toggle-on"></i> Status *</label>
+              <select id="status" name="status" required>
+                <option value="">Select Status</option>
+                <option value="Free">Free</option>
+                <option value="Paid">Paid</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="date-added"><i class="fas fa-calendar"></i> Date Added *</label>
+            <input type="date" id="date-added" name="date-added" required />
+          </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="form-sections">
+          <div class="form-section">
+            <h3><i class="fas fa-file-pdf"></i> Book File</h3>
+            <div class="form-group">
+              <label><i class="fas fa-upload"></i> Upload PDF Book *</label>
+              <div class="file-input-wrapper">
+                <input type="file" accept=".pdf" name="book" id="book" required />
+                <div class="file-input-label">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span id="book-file-text">Click to upload PDF book</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3><i class="fas fa-image"></i> Cover Image</h3>
+            <div class="form-group">
+              <label><i class="fas fa-camera"></i> Upload Cover Image *</label>
+              <div class="file-input-wrapper">
+                <input type="file" id="image" name="image" accept="image/*" required />
+                <div class="file-input-label">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span id="image-file-text">Click to upload cover image</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <i class="fas fa-plus"></i> Add Book to BookHub
+        </button>
       </form>
     </div>
+
+    <script>
+      // File input handling
+      document.getElementById('book').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || 'Click to upload PDF book';
+        document.getElementById('book-file-text').textContent = fileName;
+      });
+
+      document.getElementById('image').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || 'Click to upload cover image';
+        document.getElementById('image-file-text').textContent = fileName;
+      });
+
+      // Category selection enhancement
+      document.querySelectorAll('.category-option').forEach(option => {
+        option.addEventListener('click', function() {
+          document.querySelectorAll('.category-option').forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          this.querySelector('input[type="radio"]').checked = true;
+        });
+      });
+
+      // Form validation
+      document.getElementById('bookForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding Book...';
+      });
+    </script>
   </body>
 </html>

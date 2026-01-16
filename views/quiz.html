@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Nunito", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #2d3748;
+        line-height: 1.6;
+      }
+
+      header {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff 0%, #e2e8f0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      main {
+        padding: 2rem;
+        flex-grow: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .quiz-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .quiz-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+      }
+
+      .quiz-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .quiz-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+      }
+
+      .quiz-header h2 {
+        color: #2d3748;
+        font-size: 2rem;
+        margin: 0;
+        font-weight: 700;
+      }
+
+      .question {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: rgba(247, 250, 252, 0.8);
+        border-radius: 16px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .question:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .question h3 {
+        color: #2d3748;
+        font-size: 1.2rem;
+        margin: 0 0 1rem 0;
+        font-weight: 600;
+        line-height: 1.4;
+      }
+
+      .options-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .option-item {
+        margin-bottom: 0.75rem;
+      }
+
+      .option-input {
+        margin-right: 0.5rem;
+        cursor: pointer;
+      }
+
+      .option-label {
+        cursor: pointer;
+      }
+
+      .submit-quiz-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .submit-quiz-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+
+      .submit-quiz-button:hover::before {
+        left: 100%;
+      }
+
+      .submit-quiz-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .result-container {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .result-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #48bb78, #38a169);
+      }
+
+      .result-container h3 {
+        color: #2d3748;
+        font-size: 1.8rem;
+        margin: 0 0 1.5rem 0;
+        font-weight: 700;
+      }
+
+      .result-message {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 1rem;
+      }
+
+      .correct {
+        color: #38a169;
+        font-weight: bold;
+      }
+
+      .incorrect {
+        color: #e53e3e;
+        font-weight: bold;
+      }
+
+      .result-message {
+        font-size: 1.2rem;
+        color: #4a5568;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 900px) {
+        .quiz-container {
+          padding: 2rem;
+        }
+
+        .quiz-header h2 {
+          font-size: 1.8rem;
+        }
+
+        .question {
+          padding: 1.25rem;
+        }
+
+        .question h3 {
+          font-size: 1.1rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem;
+        }
+
+        .title {
+          font-size: 1.5rem;
+        }
+
+        main {
+          padding: 1rem;
+        }
+
+        .quiz-container {
+          padding: 1.5rem;
+        }
+
+        .quiz-header h2 {
+          font-size: 1.5rem;
+        }
+
+        .question {
+          padding: 1rem;
+        }
+
+        .question h3 {
+          font-size: 1rem;
+          line-height: 1.3;
+        }
+
+        .submit-quiz-button {
+          padding: 1.1rem 2.2rem;
+          font-size: 1.1rem;
+          min-height: 48px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .quiz-container {
+          padding: 1.25rem;
+        }
+
+        .quiz-header {
+          margin-bottom: 1.5rem;
+        }
+
+        .quiz-header h2 {
+          font-size: 1.4rem;
+        }
+
+        .question {
+          padding: 0.875rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .question h3 {
+          font-size: 0.95rem;
+          line-height: 1.2;
+        }
+
+        .option-label {
+          font-size: 0.9rem;
+        }
+
+        .submit-quiz-button {
+          padding: 1rem 2rem;
+          font-size: 1rem;
+          min-height: 46px;
+        }
+
+        .result-container {
+          padding: 1.5rem;
+        }
+
+        .result-container h3 {
+          font-size: 1.6rem;
+        }
+
+        .result-message {
+          font-size: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        main {
+          padding: 0.75rem;
+        }
+
+        .quiz-container {
+          padding: 1rem;
+        }
+
+        .quiz-header {
+          margin-bottom: 1.25rem;
+          padding-bottom: 1rem;
+        }
+
+        .quiz-header h2 {
+          font-size: 1.3rem;
+        }
+
+        .quiz-header::after {
+          width: 80px;
+          height: 2px;
+        }
+
+        .question {
+          padding: 0.75rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .question h3 {
+          font-size: 0.9rem;
+          line-height: 1.1;
+        }
+
+        .option-label {
+          font-size: 0.85rem;
+          line-height: 1.4;
+        }
+
+        .option-input {
+          margin-right: 0.4rem;
+        }
+
+        .submit-quiz-button {
+          padding: 0.9rem 1.8rem;
+          font-size: 0.95rem;
+          min-height: 44px;
+        }
+
+        .result-container {
+          padding: 1.25rem;
+          margin-top: 1.5rem;
+        }
+
+        .result-container h3 {
+          font-size: 1.4rem;
+        }
+
+        .result-message {
+          font-size: 0.95rem;
+        }
+      }
+
+      @media (max-width: 375px) {
+        .quiz-container {
+          padding: 0.875rem;
+        }
+
+        .quiz-header h2 {
+          font-size: 1.2rem;
+        }
+
+        .question {
+          padding: 0.65rem;
+        }
+
+        .question h3 {
+          font-size: 0.85rem;
+        }
+
+        .option-label {
+          font-size: 0.8rem;
+        }
+
+        .submit-quiz-button {
+          padding: 0.85rem 1.6rem;
+          font-size: 0.9rem;
+          min-height: 42px;
+        }
+
+        .result-container {
+          padding: 1rem;
+        }
+
+        .result-container h3 {
+          font-size: 1.3rem;
+        }
+
+        .result-message {
+          font-size: 0.9rem;
+        }
+      }
+
+      @media (max-width: 320px) {
+        .quiz-container {
+          padding: 0.75rem;
+        }
+
+        .quiz-header h2 {
+          font-size: 1.1rem;
+        }
+
+        .question {
+          padding: 0.6rem;
+        }
+
+        .question h3 {
+          font-size: 0.8rem;
+        }
+
+        .option-label {
+          font-size: 0.75rem;
+        }
+
+        .submit-quiz-button {
+          padding: 0.8rem 1.4rem;
+          font-size: 0.85rem;
+          min-height: 40px;
+        }
+
+        .result-container {
+          padding: 0.875rem;
+        }
+
+        .result-container h3 {
+          font-size: 1.2rem;
+        }
+
+        .result-message {
+          font-size: 0.85rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 class="title">Quiz</h1>
+    </header>
+    <main>
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <h2>Test Your Knowledge!</h2>
+        </div>
+        <form id="quizForm">
+          <div class="question">
+            <h3>Question 1: What is the capital of Ghana?</h3>
+            <ul class="options-list">
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option1-1"
+                  name="q1"
+                  value="Accra"
+                  class="option-input"
+                />
+                <label for="option1-1" class="option-label">Accra</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option1-2"
+                  name="q1"
+                  value="Kumasi"
+                  class="option-input"
+                />
+                <label for="option1-2" class="option-label">Kumasi</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option1-3"
+                  name="q1"
+                  value="Cape Coast"
+                  class="option-input"
+                />
+                <label for="option1-3" class="option-label">Cape Coast</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option1-4"
+                  name="q1"
+                  value="Tamale"
+                  class="option-input"
+                />
+                <label for="option1-4" class="option-label">Tamale</label>
+              </li>
+            </ul>
+          </div>
+
+          <div class="question">
+            <h3>Question 2: Which river is the longest in the world?</h3>
+            <ul class="options-list">
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option2-1"
+                  name="q2"
+                  value="Nile"
+                  class="option-input"
+                />
+                <label for="option2-1" class="option-label">Nile</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option2-2"
+                  name="q2"
+                  value="Amazon"
+                  class="option-input"
+                />
+                <label for="option2-2" class="option-label">Amazon</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option2-3"
+                  name="q2"
+                  value="Yangtze"
+                  class="option-input"
+                />
+                <label for="option2-3" class="option-label">Yangtze</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option2-4"
+                  name="q2"
+                  value="Mississippi"
+                  class="option-input"
+                />
+                <label for="option2-4" class="option-label">Mississippi</label>
+              </li>
+            </ul>
+          </div>
+
+          <div class="question">
+            <h3>Question 3: What is the chemical symbol for water?</h3>
+            <ul class="options-list">
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option3-1"
+                  name="q3"
+                  value="Wa"
+                  class="option-input"
+                />
+                <label for="option3-1" class="option-label">Wa</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option3-2"
+                  name="q3"
+                  value="H2O"
+                  class="option-input"
+                />
+                <label for="option3-2" class="option-label">H2O</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option3-3"
+                  name="q3"
+                  value="Ox"
+                  class="option-input"
+                />
+                <label for="option3-3" class="option-label">Ox</label>
+              </li>
+              <li class="option-item">
+                <input
+                  type="radio"
+                  id="option3-4"
+                  name="q3"
+                  value="Hy"
+                  class="option-input"
+                />
+                <label for="option3-4" class="option-label">Hy</label>
+              </li>
+            </ul>
+          </div>
+
+          <button type="submit" class="submit-quiz-button">Submit Quiz</button>
+        </form>
+
+        <div id="results" class="result-container" style="display: none">
+          <h3>Quiz Results</h3>
+          <p id="score" class="result-message">
+            Your score: <span id="finalScore"></span> /
+            <span id="totalQuestions"></span>
+          </p>
+          <div id="answerKey"></div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const quizForm = document.getElementById("quizForm");
+        const resultsContainer = document.getElementById("results");
+        const finalScoreSpan = document.getElementById("finalScore");
+        const totalQuestionsSpan = document.getElementById("totalQuestions");
+        const answerKeyDiv = document.getElementById("answerKey");
+
+        const correctAnswers = {
+          q1: "Accra",
+          q2: "Nile",
+          q3: "H2O",
+        };
+
+        quizForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          let score = 0;
+          const userAnswers = {};
+          const questions = quizForm.querySelectorAll(".question");
+          const totalQuestions = questions.length;
+
+          questions.forEach((question) => {
+            const questionName = question.querySelector(
+              'input[type="radio"]'
+            ).name;
+            const selectedOption = quizForm.querySelector(
+              `input[name="${questionName}"]:checked`
+            );
+
+            if (selectedOption) {
+              userAnswers[questionName] = selectedOption.value;
+              if (selectedOption.value === correctAnswers[questionName]) {
+                score++;
+              }
+            }
+          });
+
+          finalScoreSpan.textContent = score;
+          totalQuestionsSpan.textContent = totalQuestions;
+          resultsContainer.style.display = "block";
+
+          // Display Answer Key
+          let answerKeyHTML =
+            '<h4>Answer Key:</h4><ul style="list-style: none; padding-left: 0;">';
+          questions.forEach((question) => {
+            const questionText = question.querySelector("h3").textContent;
+            const questionName = question.querySelector(
+              'input[type="radio"]'
+            ).name;
+            const userAnswer = userAnswers[questionName];
+            const correctAnswer = correctAnswers[questionName];
+            const userAnswerDisplay = userAnswer
+              ? userAnswer
+              : '<span style="color: red;">Not Answered</span>';
+            const correctnessClass =
+              userAnswer === correctAnswer ? "correct" : "incorrect";
+
+            answerKeyHTML += `<li>${questionText} - Your Answer: <span class="${correctnessClass}">${userAnswerDisplay}</span>, Correct Answer: <span class="correct">${correctAnswer}</span></li>`;
+          });
+          answerKeyHTML += "</ul>";
+          answerKeyDiv.innerHTML = answerKeyHTML;
+
+          // Disable the form after submission
+          const allInputs = quizForm.querySelectorAll("input");
+          const submitButton = quizForm.querySelector('button[type="submit"]');
+          allInputs.forEach((input) => {
+            input.disabled = true;
+          });
+          submitButton.disabled = true;
+          submitButton.textContent = "Quiz Submitted";
+        });
+      });
+
+      // Dynamic gradient colors for body background
+      const gradients = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)'
+      ];
+
+      let currentGradient = 0;
+
+      function changeGradient() {
+        currentGradient = (currentGradient + 1) % gradients.length;
+        document.body.style.background = gradients[currentGradient];
+      }
+
+      // Change gradient every 12 seconds for quiz mode
+      setInterval(changeGradient, 12000);
+
+      // Optional: Change gradient on user interaction
+      document.addEventListener('click', changeGradient);
+   </script>
+  </body>
+</html>

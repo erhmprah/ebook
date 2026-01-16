@@ -3,17 +3,35 @@ const conn = require("./../../connection");
 async function categoryFetch(req, res) {
   const category = req.query.category;
   const offset = parseInt(req.query.offset) || 0;
-  const limit = 10;
+  const limit = parseInt(req.query.limit) || 10;
+  const showAll = req.query.showAll === 'true';
 
-  const fetchQuery =
-    "SELECT idbooks,title,image, author, title FROM books WHERE category LIKE ?  LIMIT ? OFFSET ?";
-  const countQuery =
-    "SELECT COUNT(idbooks) AS total FROM books WHERE category LIKE ?";
+  let fetchQuery;
+  let countQuery;
+  
+  if (showAll) {
+    // Fetch all books without pagination
+    fetchQuery = "SELECT idbooks, title, Author, Discription, category, excerpt, class, image, book, price, dateAdded FROM books WHERE category LIKE ?";
+    countQuery = "SELECT COUNT(idbooks) AS total FROM books WHERE category LIKE ?";
+  } else {
+    // Fetch with pagination (existing behavior)
+    fetchQuery = "SELECT idbooks, title, Author, Discription, category, excerpt, class, image, book, price, dateAdded FROM books WHERE category LIKE ? LIMIT ? OFFSET ?";
+    countQuery = "SELECT COUNT(idbooks) AS total FROM books WHERE category LIKE ?";
+  }
 
   try {
     const promiseQuery = () => {
       return new Promise((resolve, reject) => {
-        conn.query(fetchQuery, [category, limit, offset], (err, rows) => {
+        let queryParams;
+        if (showAll) {
+          // For showAll, only pass category
+          queryParams = [category];
+        } else {
+          // For pagination, pass category, limit, and offset
+          queryParams = [category, limit, offset];
+        }
+        
+        conn.query(fetchQuery, queryParams, (err, rows) => {
           if (err) {
             reject(err);
           } else {
