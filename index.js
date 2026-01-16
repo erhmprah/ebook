@@ -51,10 +51,14 @@ app.use("/pdf", require("./routes/pdf"));
 // NOTE: Removed test PDF debug page. Use the regular reader at /read which
 // uses `views/bookDisplay.html` and serves PDFs from the /pdf/:filename route.
 
-app.listen(port, (err) => {
-  if (err) {
-    console.error(`cannot connect to ${port}`);
-  } else {
-    console.log(`listening to port ${port}`);
-  }
-});
+if (require.main === module) {
+  app.listen(port, (err) => {
+    if (err) {
+      console.error(`cannot connect to ${port}`);
+    } else {
+      console.log(`listening to port ${port}`);
+    }
+  });
+} else {
+  module.exports = app;
+}
