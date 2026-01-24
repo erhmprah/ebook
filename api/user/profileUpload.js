@@ -1,30 +1,20 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs').promises;
 const sharp = require('sharp');
 const crypto = require('crypto');
 const conn = require('../../connection');
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 /**
- * Configure multer for profile image uploads
+ * Configure multer for profile image uploads (using memory storage for serverless compatibility)
  */
-const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../backend/uploads/profile-avatars');
-    try {
-      await fs.mkdir(uploadDir, { recursive: true });
-      cb(null, uploadDir);
-    } catch (error) {
-      cb(error, null);
-    }
-  },
-  filename: (req, file, cb) => {
-    const userId = req.user.id || req.user.user_id || req.user.profile?.user_id;
-    const fileExtension = path.extname(file.originalname);
-    const fileName = `${userId}-${Date.now()}-${crypto.randomBytes(8).toString('hex')}${fileExtension}`;
-    cb(null, fileName);
-  }
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -49,7 +39,7 @@ async function uploadAvatar(req, res) {
   upload(req, res, async (err) => {
     try {
       const userId = req.user.id || req.user.user_id || req.user.profile?.user_id;
-      
+
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -82,10 +72,10 @@ async function uploadAvatar(req, res) {
         });
       }
 
-      const originalPath = req.file.path;
-      const fileName = req.file.filename;
-      const baseName = path.parse(fileName).name;
-      const extension = path.extname(fileName);
+      const buffer = req.file.buffer;
+      const userIdStr = userId.toString();
+      const timestamp = Date.now();
+      const randomId = crypto.randomBytes(8).toString('hex');
 
       // Create different sizes
       const sizes = {
@@ -94,36 +84,31 @@ async function uploadAvatar(req, res) {
         large: { width: 500, height: 500, suffix: 'large' }
       };
 
-      const processedFiles = {};
+      const avatarUrls = {};
 
-      // Process each size
+      // Process each size and upload to Cloudinary
       for (const [sizeName, sizeConfig] of Object.entries(sizes)) {
-        const outputPath = path.join(
-          path.dirname(originalPath),
-          `${baseName}_${sizeConfig.suffix}${extension}`
-        );
-
-        await sharp(originalPath)
+        const processedBuffer = await sharp(buffer)
           .resize(sizeConfig.width, sizeConfig.height, {
             fit: 'cover',
             position: 'center'
           })
           .jpeg({ quality: 85, progressive: true })
-          .toFile(outputPath);
+          .toBuffer();
 
-        processedFiles[sizeName] = path.basename(outputPath);
+        const publicId = `profile-avatars/${userIdStr}/${sizeName}_${timestamp}_${randomId}`;
+
+        const result = await cloudinary.uploader.upload(processedBuffer, {
+          folder: 'profile-avatars',
+          public_id: `${userIdStr}/${sizeName}_${timestamp}_${randomId}`,
+          resource_type: 'image'
+        });
+
+        avatarUrls[sizeName] = result.secure_url;
       }
 
-      // Delete the original uploaded file
-      await fs.unlink(originalPath);
-
-      // Generate relative URLs for the processed files (shorter than full URLs)
-      const avatarUrls = {
-        thumbnail: processedFiles.thumbnail,
-        medium: processedFiles.medium,
-        large: processedFiles.large,
-        original: processedFiles.large
-      };
+      // Set original to large
+      avatarUrls.original = avatarUrls.large;
 
       // Update database with new avatar URLs
       await updateUserAvatar(userId, avatarUrls);
@@ -138,7 +123,7 @@ async function uploadAvatar(req, res) {
           avatar_urls: avatarUrls,
           file_sizes: Object.fromEntries(
             Object.entries(sizes).map(([key, config]) => [
-              key, 
+              key,
               { width: config.width, height: config.height }
             ])
           )
@@ -147,15 +132,6 @@ async function uploadAvatar(req, res) {
 
     } catch (error) {
       console.error('Avatar Upload Error:', error);
-      
-      // Clean up uploaded file if processing failed
-      if (req.file && req.file.path) {
-        try {
-          await fs.unlink(req.file.path);
-        } catch (cleanupError) {
-          console.error('Cleanup error:', cleanupError);
-        }
-      }
 
       res.status(500).json({
         success: false,
@@ -203,27 +179,29 @@ async function deleteAvatar(req, res) {
         'UPDATE user_profiles SET avatar_url = NULL, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?',
         [userId]
       );
-      
+
       await logActivity(userId, 'avatar_delete', 'Cleared profile avatar', req);
-      
+
       return res.json({
         success: true,
         message: "Avatar deleted successfully"
       });
     }
-    
-    // Delete avatar files from disk
-    const uploadDir = path.join(__dirname, '../backend/uploads/profile-avatars');
-    
+
+    // Delete avatar files from Cloudinary
     for (const size of ['thumbnail', 'medium', 'large']) {
       if (avatarData[size]) {
-        const fileName = avatarData[size];
-        const filePath = path.join(uploadDir, fileName);
-        
+        // Extract public_id from Cloudinary URL
+        // URL format: https://res.cloudinary.com/{cloud_name}/image/upload/v{timestamp}/{public_id}.{format}
+        const url = avatarData[size];
+        const urlParts = url.split('/');
+        const publicIdWithExt = urlParts[urlParts.length - 1];
+        const publicId = publicIdWithExt.split('.')[0]; // Remove extension
+
         try {
-          await fs.unlink(filePath);
+          await cloudinary.uploader.destroy(publicId);
         } catch (error) {
-          console.error(`Failed to delete ${size} avatar:`, error.message);
+          console.error(`Failed to delete ${size} avatar from Cloudinary:`, error.message);
           // Continue with other files even if one fails
         }
       }
@@ -286,20 +264,13 @@ async function getAvatar(req, res) {
     try {
       // Try to parse as JSON (our uploaded avatars)
       avatarData = JSON.parse(result[0].avatar_url);
-      
-      // Convert relative paths to full URLs
-      const baseUrl = `${req.protocol}://${req.get('host')}/uploads/profile-avatars`;
-      const fullAvatarUrls = {};
-      
-      for (const [size, fileName] of Object.entries(avatarData)) {
-        fullAvatarUrls[size] = `${baseUrl}/${fileName}`;
-      }
 
+      // URLs are already full Cloudinary URLs
       return res.json({
         success: true,
         data: {
           has_avatar: true,
-          avatar_urls: fullAvatarUrls,
+          avatar_urls: avatarData,
           uploaded_at: result[0].updated_at
         }
       });
@@ -388,22 +359,6 @@ async function logActivity(userId, activityType, description, req = null) {
   }
 }
 
-/**
- * Middleware to ensure upload directory exists
- */
-async function ensureUploadDir(req, res, next) {
-  try {
-    const uploadDir = path.join(__dirname, '../backend/uploads/profile-avatars');
-    await fs.mkdir(uploadDir, { recursive: true });
-    next();
-  } catch (error) {
-    console.error('Ensure Upload Dir Error:', error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to prepare upload directory"
-    });
-  }
-}
 
 module.exports = {
   getAvatar,

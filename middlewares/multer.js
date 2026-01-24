@@ -1,16 +1,8 @@
 const multer = require("multer");
 const path = require("path");
 
-// Set storage engine for multer
-const storage = multer.diskStorage({
-  destination: "./uploads/",
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
+// Set storage engine for multer (using memory storage for serverless compatibility)
+const storage = multer.memoryStorage();
 
 // Check file type
 function checkFileType(file, cb) {

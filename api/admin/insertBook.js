@@ -1,7 +1,6 @@
 const Book = require("../../models/Book");
 const path = require("path");
 const cloudinary = require('cloudinary').v2;
-const fs = require('fs').promises;
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -28,10 +27,9 @@ async function insertBookApi(req, res) {
 
   if (imageFile) {
     uploadPromises.push(
-      cloudinary.uploader.upload(imageFile.path, { folder: 'book-images' })
+      cloudinary.uploader.upload(imageFile.buffer, { folder: 'book-images' })
         .then(result => {
           image = result.secure_url;
-          return fs.unlink(imageFile.path);
         })
         .catch(error => {
           console.error('Error uploading image to Cloudinary:', error);
@@ -42,10 +40,9 @@ async function insertBookApi(req, res) {
 
   if (bookFile) {
     uploadPromises.push(
-      cloudinary.uploader.upload(bookFile.path, { folder: 'book-files', resource_type: 'raw' })
+      cloudinary.uploader.upload(bookFile.buffer, { folder: 'book-files', resource_type: 'raw' })
         .then(result => {
           book = result.secure_url;
-          return fs.unlink(bookFile.path);
         })
         .catch(error => {
           console.error('Error uploading book to Cloudinary:', error);
