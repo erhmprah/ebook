@@ -1,5 +1,13 @@
 const Book = require("../../models/Book");
 const path = require("path");
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs').promises;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 async function insertBookApi(req, res) {
   const title = req.body.title;
@@ -13,9 +21,29 @@ async function insertBookApi(req, res) {
   const imageFile = req.files["image"] ? req.files["image"][0] : null; // First image file
   const bookFile = req.files["book"] ? req.files["book"][0] : null; // First book file
 
-  // Get the file paths or set default values
-  const image = imageFile ? path.join("uploads", imageFile.filename) : null;
-  const book = bookFile ? path.join("uploads", bookFile.filename) : null;
+  let image = null;
+  if (imageFile) {
+    try {
+      const result = await cloudinary.uploader.upload(imageFile.path, { folder: 'book-images' });
+      image = result.secure_url;
+      await fs.unlink(imageFile.path);
+    } catch (error) {
+      console.error('Error uploading image to Cloudinary:', error);
+      return res.status(500).json({ error: "Failed to upload image" });
+    }
+  }
+
+  let book = null;
+  if (bookFile) {
+    try {
+      const result = await cloudinary.uploader.upload(bookFile.path, { folder: 'book-files', resource_type: 'raw' });
+      book = result.secure_url;
+      await fs.unlink(bookFile.path);
+    } catch (error) {
+      console.error('Error uploading book to Cloudinary:', error);
+      return res.status(500).json({ error: "Failed to upload book" });
+    }
+  }
 
   try {
     const newBook = new Book({
