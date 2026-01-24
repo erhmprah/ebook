@@ -8,6 +8,9 @@ const passport = require("./middlewares/passport");
 const session = require("express-session");
 const secretKey = require("./middlewares/crypto");
 
+// Connect to MongoDB
+require("./connection");
+
 const app = express();
 
 app.use(

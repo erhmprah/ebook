@@ -358,19 +358,16 @@ function paymentSuccess(req, res) {
 }
 
 // Helper function to fetch book price from DB
-const conn = require("../../connection");
+const Book = require("../../models/Book");
 async function fetchBookPrice(bookId) {
-  return new Promise((resolve, reject) => {
-    const query = "SELECT price, title FROM books WHERE idbooks = ? LIMIT 1";
-    conn.query(query, [bookId], (err, results) => {
-      if (err) return reject(err);
-      if (!results || results.length === 0) return resolve(null);
-      // Ensure price is a number
-      const row = results[0];
-      const price = row.price !== null ? parseFloat(row.price) : null;
-      resolve({ price, title: row.title });
-    });
-  });
+  try {
+    const book = await Book.findById(bookId).select('price title');
+    if (!book) return null;
+    return { price: book.price, title: book.title };
+  } catch (error) {
+    console.error('Error fetching book price:', error);
+    return null;
+  }
 }
 
 function setPassword(req, res) {

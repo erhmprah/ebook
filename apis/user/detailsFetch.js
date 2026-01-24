@@ -1,27 +1,19 @@
-const conn = require("../../connection");
+const Book = require("../../models/Book");
+const mongoose = require('mongoose');
 
 async function detailsFetch(req, res) {
-  const bookId = parseInt(req.query.id);
-  const fetchQuery =
-    "SELECT idbooks,title,Author,Discription,excerpt,status,price,image,book FROM books WHERE idbooks = ?";
+  const bookId = req.query.id;
+
+  if (!bookId || bookId === 'undefined' || !mongoose.Types.ObjectId.isValid(bookId)) {
+    return res.status(400).json({ error: "Invalid book ID" });
+  }
 
   try {
-    const promiseQuery = () => {
-      return new Promise((resolve, reject) => {
-        conn.query(fetchQuery, [bookId], (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        });
-      });
-    };
-
-    const books = await promiseQuery();
-    res.json(books);
+    const book = await Book.findById(bookId).select('_id title author description excerpt price image book');
+    res.json(book ? [book] : []);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 

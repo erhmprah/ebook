@@ -1,5 +1,8 @@
 const crypto = require('crypto');
-const conn = require('../../connection');
+const UserSession = require('../../models/UserSession');
+const UserProfile = require('../../models/UserProfile');
+const UserSettings = require('../../models/UserSettings');
+const UserActivityLog = require('../../models/UserActivityLog');
 
 /**
  * Get user active sessions
@@ -17,33 +20,25 @@ async function getActiveSessions(req, res) {
 
     const currentSessionToken = req.sessionID || req.user.sessionToken || req.headers['x-session-token'];
 
-    const query = `
-      SELECT 
-        id, session_token, ip_address, user_agent, device_info, 
-        is_active, created_at, last_accessed, expires_at,
-        CASE 
-          WHEN session_token = ? THEN 'current'
-          ELSE 'active'
-        END as session_status
-      FROM user_sessions 
-      WHERE user_id = ? AND is_active = 1 AND expires_at > NOW()
-      ORDER BY last_accessed DESC
-    `;
+    const sessions = await UserSession.find({
+      user_id: userId,
+      is_active: true,
+      expires_at: { $gt: new Date() }
+    })
+    .sort({ last_accessed: -1 });
 
-    const sessions = await executeQuery(query, [currentSessionToken, userId]);
-
-    // Mask session tokens for security
+    // Mask session tokens for security and determine session status
     const maskedSessions = sessions.map(session => ({
-      ...session,
+      ...session.toObject(),
       session_token: session.session_token.substring(0, 8) + '...' + session.session_token.substring(session.session_token.length - 4),
-      session_status: session.session_status
+      session_status: session.session_token === currentSessionToken ? 'current' : 'active'
     }));
 
     res.json({
       success: true,
       data: {
         sessions: maskedSessions,
-        current_session_id: sessions.find(s => s.session_status === 'current')?.id,
+        current_session_id: sessions.find(s => s.session_token === currentSessionToken)?._id,
         total_sessions: sessions.length
       }
     });

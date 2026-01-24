@@ -1,6 +1,7 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const conn = require("../connection");
+const UserProfile = require("../models/UserProfile");
+const UserSettings = require("../models/UserSettings");
 require("dotenv").config();
 
 passport.use(
@@ -17,82 +18,60 @@ passport.use(
         const email = emails[0].value;
         const fullName = displayName;
         const avatar_url = photos[0] ? photos[0].value : null;
-        
+
         // Generate unique user_id
         const user_id = `google_${google_id}_${Date.now()}`;
         const account_type = 'google';
 
         // Check if user already exists
-        const checkUserQuery = "SELECT * FROM user_profiles WHERE email = ?";
-        
-        conn.query(checkUserQuery, [email], (err, results) => {
-          if (err) {
-            console.error("Error checking user:", err);
-            return done(err);
+        let existingUser = await UserProfile.findOne({ email: email });
+
+        if (existingUser) {
+          // User exists, update their info if needed
+          existingUser.full_name = fullName;
+          existingUser.avatar_url = avatar_url;
+          existingUser.last_login = new Date();
+          await existingUser.save();
+
+          // Return the user data for session
+          const userData = {
+            user_id: existingUser.user_id,
+            full_name: existingUser.full_name,
+            email: existingUser.email,
+            account_type: existingUser.account_type
+          };
+
+          done(null, userData);
+        } else {
+          // New user, create profile
+          const newUser = await UserProfile.create({
+            user_id,
+            full_name: fullName,
+            email,
+            avatar_url,
+            account_type,
+            last_login: new Date()
+          });
+
+          // Also create default user settings for new users
+          try {
+            await UserSettings.create({ user_id });
+          } catch (settingsErr) {
+            console.error("Error creating user settings:", settingsErr);
+            // Don't fail the auth if settings creation fails
           }
-          
-          if (results.length > 0) {
-            // User exists, update their info if needed
-            const updateQuery = `
-              UPDATE user_profiles 
-              SET full_name = ?, avatar_url = ?, last_login = NOW() 
-              WHERE email = ?
-            `;
-            
-            conn.query(updateQuery, [fullName, avatar_url, email], (updateErr) => {
-              if (updateErr) {
-                console.error("Error updating user:", updateErr);
-                return done(updateErr);
-              }
-              
-              // Return the user data for session
-              const userData = {
-                user_id: results[0].user_id,
-                full_name: results[0].full_name,
-                email: results[0].email,
-                account_type: results[0].account_type
-              };
-              
-              done(null, userData);
-            });
-          } else {
-            // New user, insert into user_profiles
-            const insertQuery = `
-              INSERT INTO user_profiles (user_id, full_name, email, avatar_url, account_type, last_login)
-              VALUES (?, ?, ?, ?, ?, NOW())
-            `;
-            
-            conn.query(insertQuery, [user_id, fullName, email, avatar_url, account_type], (insertErr, result) => {
-              if (insertErr) {
-                console.error("Error inserting user:", insertErr);
-                return done(insertErr);
-              }
-              
-              // Also create default user settings for new users
-              const settingsQuery = `
-                INSERT INTO user_settings (user_id) VALUES (?)
-              `;
-              
-              conn.query(settingsQuery, [user_id], (settingsErr) => {
-                if (settingsErr) {
-                  console.error("Error creating user settings:", settingsErr);
-                  // Don't fail the auth if settings creation fails
-                }
-                
-                // Return the new user data for session
-                const userData = {
-                  user_id,
-                  full_name: fullName,
-                  email,
-                  account_type
-                };
-                
-                done(null, userData);
-              });
-            });
-          }
-        });
-        
+
+          // Return the new user data for session
+          const userData = {
+            user_id,
+            full_name: fullName,
+            email,
+            account_type
+          };
+
+          done(null, userData);
+        }
+
       } catch (error) {
         console.error("Google OAuth error:", error);
         done(error);

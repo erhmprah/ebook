@@ -1,15 +1,13 @@
-const connection = require("../../connection");
+const Book = require("../../models/Book");
 const path = require("path");
 
 async function insertBookApi(req, res) {
   const title = req.body.title;
   const author = req.body.author;
-  const discription = req.body.description;
+  const description = req.body.description;
   const category = req.body.category;
   const excerpt = req.body.excerpt;
   const _class = req.body.class;
-  const level = req.body.level;
-  const status = req.body.status;
   const price = req.body.price;
   const date = req.body.date;
   const imageFile = req.files["image"] ? req.files["image"][0] : null; // First image file
@@ -19,40 +17,25 @@ async function insertBookApi(req, res) {
   const image = imageFile ? path.join("uploads", imageFile.filename) : null;
   const book = bookFile ? path.join("uploads", bookFile.filename) : null;
 
-  const values = [
-    title,
-    author,
-    discription,
-    category,
-    excerpt,
-    _class,
-    level,
-    status,
-    price,
-    image,
-    book,
-    date,
-  ];
-
-  const insertQuery = `INSERT INTO books (title,Author,Discription,category,excerpt,class,level,status,price,image,book,dateAdded) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`;
-
   try {
-    const promiseQuery = () => {
-      return new Promise((resolve, reject) => {
-        connection.query(insertQuery, values, (err, row) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(row);
-          }
-        });
-      });
-    };
+    const newBook = new Book({
+      title,
+      author,
+      description,
+      category,
+      excerpt,
+      class: _class,
+      price: parseFloat(price) || 0,
+      image,
+      book,
+      dateAdded: date ? new Date(date) : new Date()
+    });
 
-    const results = await promiseQuery();
-    res.send(`bookinserted successfully with an id of ${results.insertId}`);
+    const savedBook = await newBook.save();
+    res.send(`Book inserted successfully with an id of ${savedBook._id}`);
   } catch (error) {
     console.log(error.stack);
+    res.status(500).json({ error: "Failed to insert book" });
   }
 }
 

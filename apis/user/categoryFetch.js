@@ -1,4 +1,4 @@
-const conn = require("./../../connection");
+const Book = require("../../models/Book");
 
 async function categoryFetch(req, res) {
   const category = req.query.category;
@@ -6,58 +6,29 @@ async function categoryFetch(req, res) {
   const limit = parseInt(req.query.limit) || 10;
   const showAll = req.query.showAll === 'true';
 
-  let fetchQuery;
-  let countQuery;
-  
-  if (showAll) {
-    // Fetch all books without pagination
-    fetchQuery = "SELECT idbooks, title, Author, Discription, category, excerpt, class, image, book, price, dateAdded FROM books WHERE category LIKE ?";
-    countQuery = "SELECT COUNT(idbooks) AS total FROM books WHERE category LIKE ?";
-  } else {
-    // Fetch with pagination (existing behavior)
-    fetchQuery = "SELECT idbooks, title, Author, Discription, category, excerpt, class, image, book, price, dateAdded FROM books WHERE category LIKE ? LIMIT ? OFFSET ?";
-    countQuery = "SELECT COUNT(idbooks) AS total FROM books WHERE category LIKE ?";
-  }
-
   try {
-    const promiseQuery = () => {
-      return new Promise((resolve, reject) => {
-        let queryParams;
-        if (showAll) {
-          // For showAll, only pass category
-          queryParams = [category];
-        } else {
-          // For pagination, pass category, limit, and offset
-          queryParams = [category, limit, offset];
-        }
-        
-        conn.query(fetchQuery, queryParams, (err, rows) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(rows);
-          }
-        });
-      });
-    };
+    // Handle '%' as wildcard to match all categories
+    const query = category === '%' ? {} : { category: { $regex: category, $options: 'i' } };
 
-    const countPromiseQuery = () => {
-      return new Promise((resolve, reject) => {
-        conn.query(countQuery, [category], (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results[0].total);
-          }
-        });
-      });
-    };
+    let books;
+    let total;
 
-    const rows = await promiseQuery();
-    const count = await countPromiseQuery();
+    if (showAll) {
+      // Fetch all books without pagination
+      books = await Book.find(query).select('_id title author description category excerpt class image book price dateAdded');
+      total = books.length;
+    } else {
+      // Fetch with pagination
+      books = await Book.find(query)
+        .select('_id title author description category excerpt class image book price dateAdded')
+        .skip(offset)
+        .limit(limit);
+      total = await Book.countDocuments(query);
+    }
+
     res.json({
-      books: rows,
-      total: count,
+      books: books,
+      total: total,
     });
   } catch (error) {
     console.error(error);

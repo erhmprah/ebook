@@ -1,39 +1,28 @@
-const conn = require("../../connection");
+const Book = require("../../models/Book");
 
 /**
  * Get all categories with their book counts
  */
 async function getCategoryStats(req, res) {
   try {
-    const query = `
-      SELECT 
-        category,
-        COUNT(*) as book_count,
-        AVG(price) as avg_price,
-        MIN(price) as min_price,
-        MAX(price) as max_price
-      FROM books 
-      GROUP BY category
-      ORDER BY category ASC
-    `;
+    const categories = await Book.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          book_count: { $sum: 1 },
+          avg_price: { $avg: "$price" },
+          min_price: { $min: "$price" },
+          max_price: { $max: "$price" }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
 
-    const promiseQuery = () => {
-      return new Promise((resolve, reject) => {
-        conn.query(query, (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        });
-      });
-    };
-
-    const categories = await promiseQuery();
-    
     // Format the response
     const formattedCategories = categories.map(category => ({
-      name: category.category || 'Uncategorized',
+      name: category._id || 'Uncategorized',
       book_count: category.book_count,
       avg_price: category.avg_price ? parseFloat(category.avg_price).toFixed(2) : 0,
       min_price: category.min_price ? parseFloat(category.min_price).toFixed(2) : 0,
@@ -86,87 +75,56 @@ async function getCategoryDetails(req, res) {
     }
 
     // Get category statistics
-    const statsQuery = `
-      SELECT 
-        COUNT(*) as book_count,
-        AVG(price) as avg_price,
-        MIN(price) as min_price,
-        MAX(price) as max_price,
-        COUNT(DISTINCT author) as unique_authors
-      FROM books 
-      WHERE category LIKE ?
-    `;
-
-    // Get recent books in this category
-    const booksQuery = `
-      SELECT idbooks, title, author, image, price, created_at
-      FROM books 
-      WHERE category LIKE ?
-      ORDER BY created_at DESC
-      LIMIT ? OFFSET ?
-    `;
-
-    const statsPromiseQuery = () => {
-      return new Promise((resolve, reject) => {
-        conn.query(statsQuery, [category], (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results[0]);
-          }
-        });
-      });
-    };
-
-    const booksPromiseQuery = () => {
-      return new Promise((resolve, reject) => {
-        conn.query(booksQuery, [category, parseInt(limit), parseInt(offset)], (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        });
-      });
-    };
-
-    const [stats, recentBooks] = await Promise.all([
-      statsPromiseQuery(),
-      booksPromiseQuery()
+    const stats = await Book.aggregate([
+      { $match: { category: { $regex: category, $options: 'i' } } },
+      {
+        $group: {
+          _id: null,
+          book_count: { $sum: 1 },
+          avg_price: { $avg: "$price" },
+          min_price: { $min: "$price" },
+          max_price: { $max: "$price" },
+          unique_authors: { $addToSet: "$author" }
+        }
+      }
     ]);
 
-    // Get author distribution for this category
-    const authorQuery = `
-      SELECT author, COUNT(*) as book_count
-      FROM books 
-      WHERE category LIKE ?
-      GROUP BY author
-      ORDER BY book_count DESC
-      LIMIT 10
-    `;
-
-    const authorPromiseQuery = () => {
-      return new Promise((resolve, reject) => {
-        conn.query(authorQuery, [category], (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        });
-      });
+    const categoryStats = stats[0] || {
+      book_count: 0,
+      avg_price: 0,
+      min_price: 0,
+      max_price: 0,
+      unique_authors: []
     };
 
-    const topAuthors = await authorPromiseQuery();
+    // Get recent books in this category
+    const recentBooks = await Book.find({ category: { $regex: category, $options: 'i' } })
+      .select('_id title author image price dateAdded')
+      .sort({ dateAdded: -1 })
+      .skip(parseInt(offset))
+      .limit(parseInt(limit));
+
+    // Get author distribution for this category
+    const topAuthors = await Book.aggregate([
+      { $match: { category: { $regex: category, $options: 'i' } } },
+      {
+        $group: {
+          _id: "$author",
+          book_count: { $sum: 1 }
+        }
+      },
+      { $sort: { book_count: -1 } },
+      { $limit: 10 }
+    ]);
 
     const formattedStats = {
       category: category,
-      book_count: stats.book_count,
-      avg_price: stats.avg_price ? parseFloat(stats.avg_price).toFixed(2) : 0,
-      min_price: stats.min_price ? parseFloat(stats.min_price).toFixed(2) : 0,
-      max_price: stats.max_price ? parseFloat(stats.max_price).toFixed(2) : 0,
-      unique_authors: stats.unique_authors,
-      is_empty: stats.book_count === 0
+      book_count: categoryStats.book_count,
+      avg_price: categoryStats.avg_price ? parseFloat(categoryStats.avg_price).toFixed(2) : 0,
+      min_price: categoryStats.min_price ? parseFloat(categoryStats.min_price).toFixed(2) : 0,
+      max_price: categoryStats.max_price ? parseFloat(categoryStats.max_price).toFixed(2) : 0,
+      unique_authors: categoryStats.unique_authors.length,
+      is_empty: categoryStats.book_count === 0
     };
 
     res.json({
@@ -174,7 +132,10 @@ async function getCategoryDetails(req, res) {
       data: {
         statistics: formattedStats,
         recent_books: recentBooks,
-        top_authors: topAuthors
+        top_authors: topAuthors.map(author => ({
+          author: author._id,
+          book_count: author.book_count
+        }))
       }
     });
 

@@ -1,4 +1,4 @@
-const conn = require("../connection");
+const UserProfile = require("../models/UserProfile");
 const bcrypt = require("bcrypt");
 const path = require("path");
 
@@ -7,61 +7,40 @@ async function registerUser(req, res) {
   const password = req.body.password;
   const email = req.body.email;
 
-  // Query to check if the email already exists
-  const checkEmailQuery = "SELECT * FROM user_profiles WHERE email = ?";
-
   try {
     // Check if the email already exists
-    conn.query(checkEmailQuery, [email], async (err, result) => {
-      if (err) {
-        console.log("Error checking email:", err);
-        return res
-          .status(500)
-          .render(path.join(__dirname, "..", "views", "signupFailure.ejs"), {
-            message: "Sign up error ",
-            buttonText: "Try again",
-          });
-      }
+    const existingUser = await UserProfile.findOne({ email: email });
 
-      // If result is not empty, that means email already exists
-      if (result.length > 0) {
-        return res
-          .status(400)
-          .render(path.join(__dirname, "..", "views", "signupFailure.ejs"), {
-            message: "Email already exist login instead",
-            buttonText: "Login",
-          });
-      }
+    if (existingUser) {
+      return res
+        .status(400)
+        .render(path.join(__dirname, "..", "views", "signupFailure.ejs"), {
+          message: "Email already exist login instead",
+          buttonText: "Login",
+        });
+    }
 
-      // Proceed with hashing the password if email is unique
-      const hashedPassword = await bcrypt.hash(password, 10);
+    // Proceed with hashing the password if email is unique
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Insert the new user into the database
-      // Note: Since user_profiles doesn't have a password field, we'll need a separate authentication approach
-      // For now, we'll insert into user_profiles and handle password separately
-      const insertQuery =
-        "INSERT INTO user_profiles (user_id, full_name, email, account_type) VALUES(?, ?, ?, 'email')";
-      
-      // Generate a unique user_id using timestamp + random number
-      const user_id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      const values = [user_id, username, email];
+    // Insert the new user into the database
+    // Note: Since user_profiles doesn't have a password field, we'll need a separate authentication approach
+    // For now, we'll insert into user_profiles and handle password separately
 
-      conn.query(insertQuery, values, (err, result) => {
-        if (err) {
-          console.log("Error inserting user:", err);
-          return res
-            .status(500)
-            .render(path.join(__dirname, "..", "views", "signupFailure.ejs"), {
-              message: "Sign up error ",
-              buttonText: "Try again",
-            });
-        } else {
-          // Insert password into a separate auth table or handle separately
-          // For now, we'll just create a basic user entry
-          return res.status(200).redirect("/success");
-        }
-      });
+    // Generate a unique user_id using timestamp + random number
+    const user_id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    await UserProfile.create({
+      user_id: user_id,
+      full_name: username,
+      email: email,
+      account_type: 'email'
     });
+
+    // Insert password into a separate auth table or handle separately
+    // For now, we'll just create a basic user entry
+    return res.status(200).redirect("/success");
+
   } catch (error) {
     console.log("Cannot register user", error);
     res
