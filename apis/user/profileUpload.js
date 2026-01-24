@@ -405,10 +405,4 @@ async function ensureUploadDir(req, res, next) {
   }
 }
 
-module.exports = {
-  uploadAvatar,
-  deleteAvatar,
-  getAvatar,
-  ensureUploadDir,
-  upload
-};
+module.exports = uploadAvatar;

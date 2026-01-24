@@ -419,11 +419,4 @@ async function logActivity(userId, activityType, description, req = null) {
   }
 }
 
-module.exports = {
-  getActiveSessions,
-  terminateSession,
-  terminateAllOtherSessions,
-  createSession,
-  cleanupExpiredSessions,
-  deleteAccount
-};
+module.exports = getActiveSessions;

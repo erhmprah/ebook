@@ -46,4 +46,4 @@ async function loginPost(req, res) {
   }
 }
 
-module.exports = { loginPost };
+module.exports = loginPost;

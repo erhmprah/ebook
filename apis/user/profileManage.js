@@ -306,11 +306,4 @@ async function ensureProfile(req, res, next) {
   }
 }
 
-module.exports = {
-  getProfile,
-  updateProfile,
-  updateSettings,
-  getActivityLog,
-  ensureProfile,
-  createProfileFromGoogle
-};
+module.exports = getProfile;

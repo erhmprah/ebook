@@ -149,7 +149,4 @@ async function getCategoryDetails(req, res) {
   }
 }
 
-module.exports = {
-  getCategoryStats,
-  getCategoryDetails
-};
+module.exports = getCategoryStats;
