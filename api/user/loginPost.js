@@ -1,5 +1,5 @@
 const UserProfile = require("../../models/UserProfile");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 async function loginPost(req, res) {
   const email = req.body.email;

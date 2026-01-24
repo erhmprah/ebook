@@ -7,9 +7,10 @@ const cors = require("cors");
 const passport = require("./middlewares/passport");
 const session = require("express-session");
 const secretKey = require("./middlewares/crypto");
+const { MongoStore } = require("connect-mongo");
 
 // Connect to MongoDB
-require("./connection");
+const mongoose = require("./connection");
 
 const app = express();
 
@@ -18,6 +19,13 @@ app.use(
     secret: secretKey,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: "mongodb+srv://erhmprah:60Gvp4UcHBRzuH3f@cluster0.cdepkcl.mongodb.net/",
+      collectionName: "sessions"
+    }),
+    cookie: { 
+      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    }
   })
 );
 //
