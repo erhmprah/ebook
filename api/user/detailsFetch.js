@@ -1,4 +1,4 @@
-const Book = require("../backend/models/Book");
+const Book = require("../../models/Book");
 const mongoose = require('mongoose');
 
 async function detailsFetch(req, res) {

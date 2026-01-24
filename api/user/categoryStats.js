@@ -1,4 +1,4 @@
-const Book = require("../backend/models/Book");
+const Book = require("../../models/Book");
 
 /**
  * Get all categories with their book counts
@@ -149,4 +149,7 @@ async function getCategoryDetails(req, res) {
   }
 }
 
-module.exports = getCategoryStats;
+module.exports = {
+  getCategoryStats,
+  getCategoryDetails
+};

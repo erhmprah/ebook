@@ -1,4 +1,4 @@
-const Book = require("../backend/models/Book");
+const Book = require("../../models/Book");
 const path = require("path");
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs').promises;

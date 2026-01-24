@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs').promises;
 const sharp = require('sharp');
 const crypto = require('crypto');
-const conn = require('../backend/connection');
+const conn = require('../../connection');
 
 /**
  * Configure multer for profile image uploads
@@ -405,4 +405,8 @@ async function ensureUploadDir(req, res, next) {
   }
 }
 
-module.exports = uploadAvatar;
+module.exports = {
+  getAvatar,
+  uploadAvatar,
+  deleteAvatar
+};

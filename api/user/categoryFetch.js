@@ -1,4 +1,4 @@
-const Book = require("../backend/models/Book");
+const Book = require("../../models/Book");
 
 async function categoryFetch(req, res) {
   const category = req.query.category;

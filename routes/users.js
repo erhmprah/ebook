@@ -25,15 +25,17 @@ const {
   categoryStats,
 } = require("../controller/users/users");
 
-const indexFectch = require("../apis/user/indexFetch");
-const categoryFetch = require("../apis/user/categoryFetch");
-const detailsFetch = require("../apis/user/detailsFetch");
-const categoryStatsAPI = require("../apis/user/categoryStats");
+const indexFectch = require("../api/user/indexFetch");
+const categoryFetch = require("../api/user/categoryFetch");
+const detailsFetch = require("../api/user/detailsFetch");
+const categoryStatsAPI = require("../api/user/categoryStats");
 
 // Profile Management APIs
-const profileManage = require("../apis/user/profileManage");
-const profileUpload = require("../apis/user/profileUpload");
-const profileSessions = require("../apis/user/profileSessions");
+const profileManage = require("../api/user/profileManage");
+const profileUpload = require("../api/user/profileUpload");
+const profileSessions = require("../api/user/profileSessions");
+const loginPost = require("../api/user/loginPost");
+const registerUser = require("../api/registerUser");
 
 
 // Public Routes - Google OAuth only
@@ -111,5 +113,9 @@ router.get("/logout", (req, res) => {
     res.redirect("/login");
   });
 });
+
+// Authentication API Routes
+router.post("/api/login", loginPost);
+router.post("/api/register", registerUser);
 
 module.exports = router;

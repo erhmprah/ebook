@@ -1,8 +1,8 @@
 const crypto = require('crypto');
-const UserSession = require('../backend/models/UserSession');
-const UserProfile = require('../backend/models/UserProfile');
-const UserSettings = require('../backend/models/UserSettings');
-const UserActivityLog = require('../backend/models/UserActivityLog');
+const UserSession = require('../../models/UserSession');
+const UserProfile = require('../../models/UserProfile');
+const UserSettings = require('../../models/UserSettings');
+const UserActivityLog = require('../../models/UserActivityLog');
 
 /**
  * Get user active sessions
@@ -419,4 +419,11 @@ async function logActivity(userId, activityType, description, req = null) {
   }
 }
 
-module.exports = getActiveSessions;
+module.exports = {
+  getActiveSessions,
+  terminateSession,
+  terminateAllOtherSessions,
+  createSession,
+  cleanupExpiredSessions,
+  deleteAccount
+};

@@ -306,4 +306,9 @@ async function ensureProfile(req, res, next) {
   }
 }
 
-module.exports = getProfile;
+module.exports = {
+  getProfile,
+  updateProfile,
+  updateSettings,
+  getActivityLog
+};
