@@ -1,15 +1,3 @@
 {
-  "version": 2,
-  "functions": {
-    "index.js": {
-      "maxDuration": 30,
-      "memory": 2008
-    }
-  },
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.js"
-    }
-  ]
+  "version": 2
 }
