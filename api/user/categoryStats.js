@@ -1,4 +1,4 @@
-const Book = require("../../models/Book");
+const Book = require("../backend/models/Book");
 
 /**
  * Get all categories with their book counts

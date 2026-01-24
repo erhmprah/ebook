@@ -1,8 +1,8 @@
 const crypto = require('crypto');
-const UserSession = require('../../models/UserSession');
-const UserProfile = require('../../models/UserProfile');
-const UserSettings = require('../../models/UserSettings');
-const UserActivityLog = require('../../models/UserActivityLog');
+const UserSession = require('../backend/models/UserSession');
+const UserProfile = require('../backend/models/UserProfile');
+const UserSettings = require('../backend/models/UserSettings');
+const UserActivityLog = require('../backend/models/UserActivityLog');
 
 /**
  * Get user active sessions
@@ -334,7 +334,7 @@ async function deleteAccount(req, res) {
         const parsedAvatar = JSON.parse(avatarData[0].avatar_url);
         const fs = require('fs').promises;
         const path = require('path');
-        const uploadDir = path.join(__dirname, '../../uploads/profile-avatars');
+        const uploadDir = path.join(__dirname, '../backend/uploads/profile-avatars');
 
         for (const size of ['thumbnail', 'medium', 'large']) {
           if (parsedAvatar[size]) {

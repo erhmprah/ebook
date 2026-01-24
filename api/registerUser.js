@@ -1,4 +1,4 @@
-const UserProfile = require("../models/UserProfile");
+const UserProfile = require("../backend/models/UserProfile");
 const bcrypt = require("bcrypt");
 const path = require("path");
 

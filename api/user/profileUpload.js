@@ -3,14 +3,14 @@ const path = require('path');
 const fs = require('fs').promises;
 const sharp = require('sharp');
 const crypto = require('crypto');
-const conn = require('../../connection');
+const conn = require('../backend/connection');
 
 /**
  * Configure multer for profile image uploads
  */
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/profile-avatars');
+    const uploadDir = path.join(__dirname, '../backend/uploads/profile-avatars');
     try {
       await fs.mkdir(uploadDir, { recursive: true });
       cb(null, uploadDir);
@@ -213,7 +213,7 @@ async function deleteAvatar(req, res) {
     }
     
     // Delete avatar files from disk
-    const uploadDir = path.join(__dirname, '../../uploads/profile-avatars');
+    const uploadDir = path.join(__dirname, '../backend/uploads/profile-avatars');
     
     for (const size of ['thumbnail', 'medium', 'large']) {
       if (avatarData[size]) {
@@ -393,7 +393,7 @@ async function logActivity(userId, activityType, description, req = null) {
  */
 async function ensureUploadDir(req, res, next) {
   try {
-    const uploadDir = path.join(__dirname, '../../uploads/profile-avatars');
+    const uploadDir = path.join(__dirname, '../backend/uploads/profile-avatars');
     await fs.mkdir(uploadDir, { recursive: true });
     next();
   } catch (error) {
