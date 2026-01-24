@@ -6,17 +6,19 @@ const storage = multer.memoryStorage();
 
 // Check file type
 function checkFileType(file, cb) {
-  // Allowed file types
-  const filetypes = /jpeg|jpg|png|pdf|gif/;
-  // Check the file extension
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Allowed MIME types
+  const allowedMimes = /image\/(jpeg|jpg|png|gif)|application\/pdf/;
   // Check the MIME type
-  const mimetype = filetypes.test(file.mimetype);
+  const mimetype = allowedMimes.test(file.mimetype);
+
+  // Also check file extension for additional security
+  const allowedExts = /\.(jpeg|jpg|png|pdf|gif)$/i;
+  const extname = allowedExts.test(path.extname(file.originalname).toLowerCase());
 
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb("Error: Images Only!");
+    cb("Error: Only JPEG, PNG, GIF images and PDF files are allowed!");
   }
 }
 
